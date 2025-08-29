@@ -1,32 +1,66 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Inject } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Headers,
+  Inject,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 
-@Controller('orders')
+@Controller('api/orders')
 export class OrderController {
-  constructor(@Inject('TRANSACTION_SERVICE') private readonly client: ClientProxy) {}
+  constructor(
+    @Inject('TRANSACTION_SERVICE') private readonly client: ClientProxy,
+  ) {}
 
   @Get()
-  findAll() {
-    return this.client.send({ cmd: 'findAllOrders' }, {});
+  getOrders(@Headers('authorization') token: string) {
+    return this.client.send({ cmd: 'get_orders' }, { token });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.client.send({ cmd: 'findOrderById' }, { id });
+  getOrderById(
+    @Param('id') id: string,
+    @Headers('authorization') token: string,
+  ) {
+    return this.client.send({ cmd: 'get_order_by_id' }, { id, token });
   }
 
   @Post()
-  create(@Body() createOrderDto: any) {
-    return this.client.send({ cmd: 'createOrder' }, createOrderDto);
+  createOrder(
+    @Body() createOrderDto: any,
+    @Headers('authorization') token: string,
+  ) {
+    return this.client.send(
+      { cmd: 'create_order' },
+      { ...createOrderDto, token },
+    );
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: any) {
-    return this.client.send({ cmd: 'updateOrder' }, { id, ...updateOrderDto });
+  @Post(':id/cancel')
+  cancelOrder(
+    @Param('id') id: string,
+    @Headers('authorization') token: string,
+  ) {
+    return this.client.send({ cmd: 'cancel_order' }, { id, token });
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.client.send({ cmd: 'deleteOrder' }, { id });
+  @Get(':id/receipt')
+  getOrderReceipt(
+    @Param('id') id: string,
+    @Headers('authorization') token: string,
+  ) {
+    return this.client.send({ cmd: 'get_order_receipt' }, { id, token });
+  }
+
+  @Post(':id/refund')
+  refundOrder(
+    @Param('id') id: string,
+    @Body() data: any,
+    @Headers('authorization') token: string,
+  ) {
+    return this.client.send({ cmd: 'refund_order' }, { id, ...data, token });
   }
 }

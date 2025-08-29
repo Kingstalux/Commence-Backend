@@ -1,12 +1,17 @@
 import { Document } from 'mongoose';
-export interface IUser extends Document {
+export type UserDocument = User & Document;
+export declare class User {
     email: string;
     password: string;
     name?: string;
+    preferences?: any;
 }
-declare const _default: import("mongoose").Model<IUser, {}, {}, {}, Document<unknown, {}, IUser, {}, {}> & IUser & Required<{
-    _id: unknown;
-}> & {
+export declare const UserSchema: import("mongoose").Schema<User, import("mongoose").Model<User, any, any, any, Document<unknown, any, User, any, {}> & User & {
+    _id: import("mongoose").Types.ObjectId;
+} & {
     __v: number;
-}, any>;
-export default _default;
+}, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, User, Document<unknown, {}, import("mongoose").FlatRecord<User>, {}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & import("mongoose").FlatRecord<User> & {
+    _id: import("mongoose").Types.ObjectId;
+} & {
+    __v: number;
+}>;

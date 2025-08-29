@@ -1,32 +1,38 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { DiscountService } from '../app.service';
 
-@Controller('discounts')
+@Controller()
 export class DiscountController {
   constructor(private readonly discountService: DiscountService) {}
 
-  @Get()
+  @MessagePattern({ cmd: 'admin_get_discounts' })
   findAll() {
     return this.discountService.findAllDiscounts();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.discountService.findDiscountById(id);
+  @MessagePattern({ cmd: 'admin_get_discount' })
+  findOne(data: any) {
+    return this.discountService.findDiscountById(data.id);
   }
 
-  @Post()
-  create(@Body() createDiscountDto: any) {
+  @MessagePattern({ cmd: 'admin_create_discount' })
+  create(createDiscountDto: any) {
     return this.discountService.createDiscount(createDiscountDto);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateDiscountDto: any) {
-    return this.discountService.updateDiscount(id, updateDiscountDto);
+  @MessagePattern({ cmd: 'admin_update_discount' })
+  update(data: any) {
+    return this.discountService.updateDiscount(data.id, data);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.discountService.deleteDiscount(id);
+  @MessagePattern({ cmd: 'admin_delete_discount' })
+  remove(data: any) {
+    return this.discountService.deleteDiscount(data.id);
+  }
+
+  @MessagePattern({ cmd: 'admin_validate_discount' })
+  validateCode(data: any) {
+    return this.discountService.validateDiscountCode(data.code);
   }
 }

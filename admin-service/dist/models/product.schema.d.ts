@@ -1,8 +1,9 @@
 import { Document } from 'mongoose';
-export interface IProduct extends Document {
+export type ProductDocument = Product & Document;
+export declare class Product {
     sku: string;
     title: string;
-    description: string;
+    description?: string;
     price_cents: number;
     currency: string;
     stock: number;
@@ -10,9 +11,12 @@ export interface IProduct extends Document {
     created_at: Date;
     updated_at: Date;
 }
-declare const _default: import("mongoose").Model<IProduct, {}, {}, {}, Document<unknown, {}, IProduct, {}, {}> & IProduct & Required<{
-    _id: unknown;
-}> & {
+export declare const ProductSchema: import("mongoose").Schema<Product, import("mongoose").Model<Product, any, any, any, Document<unknown, any, Product, any, {}> & Product & {
+    _id: import("mongoose").Types.ObjectId;
+} & {
     __v: number;
-}, any>;
-export default _default;
+}, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, Product, Document<unknown, {}, import("mongoose").FlatRecord<Product>, {}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & import("mongoose").FlatRecord<Product> & {
+    _id: import("mongoose").Types.ObjectId;
+} & {
+    __v: number;
+}>;

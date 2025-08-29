@@ -1,21 +1,25 @@
-import { Schema, model, Document, Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Types } from 'mongoose';
 
 export type OrderStatus = 'PENDING' | 'PAID' | 'FAILED';
+export type OrderDocument = Order & Document;
 
-export interface IOrder extends Document {
+@Schema()
+export class Order {
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   user_id: Types.ObjectId;
+
+  @Prop({ required: true })
   total_cents: number;
+
+  @Prop({ required: true })
   currency: string;
+
+  @Prop({ enum: ['PENDING', 'PAID', 'FAILED'], default: 'PENDING' })
   status: OrderStatus;
+
+  @Prop({ default: Date.now })
   created_at: Date;
 }
 
-const OrderSchema = new Schema<IOrder>({
-  user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  total_cents: { type: Number, required: true },
-  currency: { type: String, required: true },
-  status: { type: String, enum: ['PENDING', 'PAID', 'FAILED'], default: 'PENDING' },
-  created_at: { type: Date, default: Date.now },
-});
-
-export default model<IOrder>('Order', OrderSchema);
+export const OrderSchema = SchemaFactory.createForClass(Order);

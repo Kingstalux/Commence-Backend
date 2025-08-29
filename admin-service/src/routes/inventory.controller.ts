@@ -1,17 +1,18 @@
-import { Controller, Get, Put, Body, Param } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { ProductService } from '../app.service';
 
-@Controller('inventory')
+@Controller()
 export class InventoryController {
   constructor(private readonly productService: ProductService) {}
 
-  @Get(':sku')
-  getInventory(@Param('sku') sku: string) {
-    return this.productService.getInventory(sku);
+  @MessagePattern({ cmd: 'admin_get_inventory' })
+  getInventory(data: any) {
+    return this.productService.getInventory(data.sku);
   }
 
-  @Put(':sku')
-  updateInventory(@Param('sku') sku: string, @Body() updateInventoryDto: any) {
-    return this.productService.updateInventory(sku, updateInventoryDto);
+  @MessagePattern({ cmd: 'admin_update_inventory' })
+  updateInventory(data: any) {
+    return this.productService.updateInventory(data.sku, data);
   }
 }

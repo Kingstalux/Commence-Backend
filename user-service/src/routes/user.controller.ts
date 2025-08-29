@@ -1,32 +1,36 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { UserService } from '../app.service';
 
-@Controller('users')
+@Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
-  findAll() {
-    return this.userService.findAllUsers();
+  @MessagePattern({ cmd: 'findAllUsers' })
+  async findAll() {
+    console.log('findAllUsers');
+    const data = await this.userService.findAllUsers();
+    console.log('data', data);
+    return data;
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findUserById(id);
+  @MessagePattern({ cmd: 'findUserById' })
+  findOne(data: any) {
+    return this.userService.findUserById(data.id);
   }
 
-  @Post()
-  create(@Body() createUserDto: any) {
+  @MessagePattern({ cmd: 'createUser' })
+  create(createUserDto: any) {
     return this.userService.createUser(createUserDto);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: any) {
-    return this.userService.updateUser(id, updateUserDto);
+  @MessagePattern({ cmd: 'updateUser' })
+  update(data: any) {
+    return this.userService.updateUser(data.id, data);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.deleteUser(id);
+  @MessagePattern({ cmd: 'deleteUser' })
+  remove(data: any) {
+    return this.userService.deleteUser(data.id);
   }
 }

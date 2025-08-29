@@ -23,6 +23,12 @@ const cart_controller_1 = require("./routes/cart.controller");
 const order_controller_1 = require("./routes/order.controller");
 const payment_controller_1 = require("./routes/payment.controller");
 const event_controller_1 = require("./routes/event.controller");
+const checkout_controller_1 = require("./routes/checkout.controller");
+const feature_flags_controller_1 = require("./routes/feature-flags.controller");
+const system_controller_1 = require("./routes/system.controller");
+const admin_users_controller_1 = require("./routes/admin-users.controller");
+const transactions_controller_1 = require("./routes/transactions.controller");
+const notifications_controller_1 = require("./routes/notifications.controller");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -66,6 +72,7 @@ exports.AppModule = AppModule = __decorate([
             profile_controller_1.ProfileController,
             role_controller_1.RoleController,
             product_controller_1.ProductController,
+            product_controller_1.AdminProductController,
             inventory_controller_1.InventoryController,
             discount_controller_1.DiscountController,
             media_controller_1.MediaController,
@@ -73,6 +80,13 @@ exports.AppModule = AppModule = __decorate([
             order_controller_1.OrderController,
             payment_controller_1.PaymentController,
             event_controller_1.EventController,
+            checkout_controller_1.CheckoutController,
+            feature_flags_controller_1.FeatureFlagsController,
+            system_controller_1.SystemController,
+            admin_users_controller_1.AdminUsersController,
+            transactions_controller_1.TransactionsController,
+            transactions_controller_1.AdminTransactionsController,
+            notifications_controller_1.NotificationsController,
         ],
         providers: [app_service_1.AppService],
     })

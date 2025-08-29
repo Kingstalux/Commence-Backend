@@ -1,32 +1,41 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { OrderService } from '../app.service';
 
-@Controller('orders')
+@Controller()
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Get()
-  findAll() {
+  @MessagePattern({ cmd: 'get_orders' })
+  getOrders(data: any) {
+    if (data.userId) {
+      return this.orderService.getUserOrders(data.userId);
+    }
     return this.orderService.findAllOrders();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOrderById(id);
+  @MessagePattern({ cmd: 'get_order_by_id' })
+  findOne(data: any) {
+    return this.orderService.findOrderById(data.id);
   }
 
-  @Post()
-  create(@Body() createOrderDto: any) {
+  @MessagePattern({ cmd: 'create_order' })
+  create(createOrderDto: any) {
     return this.orderService.createOrder(createOrderDto);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: any) {
-    return this.orderService.updateOrder(id, updateOrderDto);
+  @MessagePattern({ cmd: 'cancel_order' })
+  cancelOrder(data: any) {
+    return this.orderService.cancelOrder(data.id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.orderService.deleteOrder(id);
+  @MessagePattern({ cmd: 'get_order_receipt' })
+  getOrderReceipt(data: any) {
+    return this.orderService.getOrderReceipt(data.id);
+  }
+
+  @MessagePattern({ cmd: 'refund_order' })
+  refundOrder(data: any) {
+    return this.orderService.refundOrder(data.id, data);
   }
 }

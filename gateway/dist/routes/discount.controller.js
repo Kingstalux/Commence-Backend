@@ -19,20 +19,23 @@ let DiscountController = class DiscountController {
     constructor(client) {
         this.client = client;
     }
-    findAll() {
-        return this.client.send({ cmd: 'findAllDiscounts' }, {});
+    getDiscounts() {
+        return this.client.send({ cmd: 'admin_get_discounts' }, {});
     }
-    findOne(id) {
-        return this.client.send({ cmd: 'findDiscountById' }, { id });
+    getDiscount(id) {
+        return this.client.send({ cmd: 'admin_get_discount' }, { id });
     }
-    create(createDiscountDto) {
-        return this.client.send({ cmd: 'createDiscount' }, createDiscountDto);
+    createDiscount(createDiscountDto) {
+        return this.client.send({ cmd: 'admin_create_discount' }, createDiscountDto);
     }
-    update(id, updateDiscountDto) {
-        return this.client.send({ cmd: 'updateDiscount' }, { id, ...updateDiscountDto });
+    updateDiscount(id, updateDiscountDto) {
+        return this.client.send({ cmd: 'admin_update_discount' }, { id, ...updateDiscountDto });
     }
-    remove(id) {
-        return this.client.send({ cmd: 'deleteDiscount' }, { id });
+    deleteDiscount(id) {
+        return this.client.send({ cmd: 'admin_delete_discount' }, { id });
+    }
+    validateDiscountCode(code) {
+        return this.client.send({ cmd: 'admin_validate_discount' }, { code });
     }
 };
 exports.DiscountController = DiscountController;
@@ -41,21 +44,21 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], DiscountController.prototype, "findAll", null);
+], DiscountController.prototype, "getDiscounts", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], DiscountController.prototype, "findOne", null);
+], DiscountController.prototype, "getDiscount", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], DiscountController.prototype, "create", null);
+], DiscountController.prototype, "createDiscount", null);
 __decorate([
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -63,16 +66,23 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
-], DiscountController.prototype, "update", null);
+], DiscountController.prototype, "updateDiscount", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], DiscountController.prototype, "remove", null);
+], DiscountController.prototype, "deleteDiscount", null);
+__decorate([
+    (0, common_1.Get)(':code/validate'),
+    __param(0, (0, common_1.Param)('code')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], DiscountController.prototype, "validateDiscountCode", null);
 exports.DiscountController = DiscountController = __decorate([
-    (0, common_1.Controller)('discounts'),
+    (0, common_1.Controller)('api/admin/discounts'),
     __param(0, (0, common_1.Inject)('ADMIN_SERVICE')),
     __metadata("design:paramtypes", [microservices_1.ClientProxy])
 ], DiscountController);

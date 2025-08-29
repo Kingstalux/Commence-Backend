@@ -8,12 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventController = void 0;
 const common_1 = require("@nestjs/common");
+const microservices_1 = require("@nestjs/microservices");
 const app_service_1 = require("../app.service");
 let EventController = class EventController {
     constructor(eventService) {
@@ -22,36 +20,52 @@ let EventController = class EventController {
     findAll() {
         return this.eventService.findAllEvents();
     }
-    findOne(id) {
-        return this.eventService.findEventById(id);
+    findOne(data) {
+        return this.eventService.findEventById(data.id);
     }
     create(createEventDto) {
         return this.eventService.createEvent(createEventDto);
     }
+    logCheckoutEvent(data) {
+        return this.eventService.logCheckoutEvent(data);
+    }
+    logOrderEvent(data) {
+        return this.eventService.logOrderEvent(data);
+    }
 };
 exports.EventController = EventController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, microservices_1.MessagePattern)({ cmd: 'get_all_events' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], EventController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, microservices_1.MessagePattern)({ cmd: 'get_event_by_id' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], EventController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    (0, microservices_1.MessagePattern)({ cmd: 'create_event' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], EventController.prototype, "create", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'log_checkout_event' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], EventController.prototype, "logCheckoutEvent", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'log_order_event' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], EventController.prototype, "logOrderEvent", null);
 exports.EventController = EventController = __decorate([
-    (0, common_1.Controller)('events'),
+    (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.EventService])
 ], EventController);
 //# sourceMappingURL=event.controller.js.map

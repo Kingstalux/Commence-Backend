@@ -8,12 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductController = void 0;
 const common_1 = require("@nestjs/common");
+const microservices_1 = require("@nestjs/microservices");
 const app_service_1 = require("../app.service");
 let ProductController = class ProductController {
     constructor(productService) {
@@ -22,57 +20,61 @@ let ProductController = class ProductController {
     findAll() {
         return this.productService.findAllProducts();
     }
-    findOne(id) {
-        return this.productService.findProductById(id);
+    findOne(data) {
+        return this.productService.findProductById(data.id);
     }
     create(createProductDto) {
         return this.productService.createProduct(createProductDto);
     }
-    update(id, updateProductDto) {
-        return this.productService.updateProduct(id, updateProductDto);
+    update(data) {
+        return this.productService.updateProduct(data.id, data);
     }
-    remove(id) {
-        return this.productService.deleteProduct(id);
+    remove(data) {
+        return this.productService.deleteProduct(data.id);
+    }
+    bulkImport(data) {
+        return this.productService.bulkImportProducts(data.products);
     }
 };
 exports.ProductController = ProductController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_get_products' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_get_product' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_create_product' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "create", null);
 __decorate([
-    (0, common_1.Put)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_update_product' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_delete_product' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "remove", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_bulk_import_products' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProductController.prototype, "bulkImport", null);
 exports.ProductController = ProductController = __decorate([
-    (0, common_1.Controller)('products'),
+    (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.ProductService])
 ], ProductController);
 //# sourceMappingURL=product.controller.js.map

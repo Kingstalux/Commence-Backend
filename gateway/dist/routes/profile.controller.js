@@ -19,31 +19,118 @@ let ProfileController = class ProfileController {
     constructor(client) {
         this.client = client;
     }
-    getProfile(id) {
-        return this.client.send({ cmd: 'getProfile' }, { id });
+    updateProfile(data, token) {
+        return this.client.send({ cmd: 'update_profile' }, { ...data, token });
     }
-    updateProfile(id, updateProfileDto) {
-        return this.client.send({ cmd: 'updateProfile' }, { id, ...updateProfileDto });
+    updatePassword(data, token) {
+        return this.client.send({ cmd: 'update_password' }, { ...data, token });
+    }
+    deleteAccount(token) {
+        return this.client.send({ cmd: 'delete_account' }, { token });
+    }
+    getPreferences(token) {
+        return this.client.send({ cmd: 'get_preferences' }, { token });
+    }
+    updatePreferences(preferences, token) {
+        return this.client.send({ cmd: 'update_preferences' }, { preferences, token });
+    }
+    getPaymentMethods(token) {
+        return this.client.send({ cmd: 'get_payment_methods' }, { token });
+    }
+    addPaymentMethod(data, token) {
+        return this.client.send({ cmd: 'add_payment_method' }, { ...data, token });
+    }
+    updatePaymentMethod(id, data, token) {
+        return this.client.send({ cmd: 'update_payment_method' }, { id, ...data, token });
+    }
+    deletePaymentMethod(id, token) {
+        return this.client.send({ cmd: 'delete_payment_method' }, { id, token });
+    }
+    setDefaultPaymentMethod(id, token) {
+        return this.client.send({ cmd: 'set_default_payment_method' }, { id, token });
     }
 };
 exports.ProfileController = ProfileController;
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Put)('profile'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], ProfileController.prototype, "updateProfile", null);
+__decorate([
+    (0, common_1.Put)('password'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], ProfileController.prototype, "updatePassword", null);
+__decorate([
+    (0, common_1.Delete)('account'),
+    __param(0, (0, common_1.Headers)('authorization')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], ProfileController.prototype, "getProfile", null);
+], ProfileController.prototype, "deleteAccount", null);
 __decorate([
-    (0, common_1.Put)(':id'),
+    (0, common_1.Get)('preferences'),
+    __param(0, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ProfileController.prototype, "getPreferences", null);
+__decorate([
+    (0, common_1.Put)('preferences'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], ProfileController.prototype, "updatePreferences", null);
+__decorate([
+    (0, common_1.Get)('payment-methods'),
+    __param(0, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ProfileController.prototype, "getPaymentMethods", null);
+__decorate([
+    (0, common_1.Post)('payment-methods'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], ProfileController.prototype, "addPaymentMethod", null);
+__decorate([
+    (0, common_1.Put)('payment-methods/:id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Headers)('authorization')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, Object, String]),
     __metadata("design:returntype", void 0)
-], ProfileController.prototype, "updateProfile", null);
+], ProfileController.prototype, "updatePaymentMethod", null);
+__decorate([
+    (0, common_1.Delete)('payment-methods/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], ProfileController.prototype, "deletePaymentMethod", null);
+__decorate([
+    (0, common_1.Put)('payment-methods/:id/default'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], ProfileController.prototype, "setDefaultPaymentMethod", null);
 exports.ProfileController = ProfileController = __decorate([
-    (0, common_1.Controller)('profiles'),
+    (0, common_1.Controller)('api/users'),
     __param(0, (0, common_1.Inject)('USER_SERVICE')),
     __metadata("design:paramtypes", [microservices_1.ClientProxy])
 ], ProfileController);

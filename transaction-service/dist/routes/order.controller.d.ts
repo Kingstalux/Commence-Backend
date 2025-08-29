@@ -2,29 +2,10 @@ import { OrderService } from '../app.service';
 export declare class OrderController {
     private readonly orderService;
     constructor(orderService: OrderService);
-    findAll(): Promise<(import("mongoose").Document<unknown, {}, import("../models/order.schema").IOrder, {}, {}> & import("../models/order.schema").IOrder & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    })[]>;
-    findOne(id: string): Promise<import("mongoose").Document<unknown, {}, import("../models/order.schema").IOrder, {}, {}> & import("../models/order.schema").IOrder & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    }>;
-    create(createOrderDto: any): Promise<import("mongoose").Document<unknown, {}, import("../models/order.schema").IOrder, {}, {}> & import("../models/order.schema").IOrder & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    }>;
-    update(id: string, updateOrderDto: any): Promise<import("mongoose").Document<unknown, {}, import("../models/order.schema").IOrder, {}, {}> & import("../models/order.schema").IOrder & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    }>;
-    remove(id: string): Promise<import("mongoose").Document<unknown, {}, import("../models/order.schema").IOrder, {}, {}> & import("../models/order.schema").IOrder & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    }>;
+    getOrders(data: any): Promise<any[]>;
+    findOne(data: any): Promise<any>;
+    create(createOrderDto: any): Promise<any>;
+    cancelOrder(data: any): Promise<any>;
+    getOrderReceipt(data: any): Promise<any>;
+    refundOrder(data: any): Promise<any>;
 }

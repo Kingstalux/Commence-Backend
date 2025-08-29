@@ -1,17 +1,18 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { UserService } from '../app.service';
 
-@Controller('roles')
+@Controller()
 export class RoleController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
+  @MessagePattern({ cmd: 'getRoles' })
   getRoles() {
     return this.userService.getRoles();
   }
 
-  @Post()
-  createRole(@Body() createRoleDto: any) {
+  @MessagePattern({ cmd: 'createRole' })
+  createRole(createRoleDto: any) {
     return this.userService.createRole(createRoleDto);
   }
 }

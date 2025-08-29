@@ -6,7 +6,10 @@ import { UserController } from './routes/user.controller';
 import { AuthController } from './routes/auth.controller';
 import { ProfileController } from './routes/profile.controller';
 import { RoleController } from './routes/role.controller';
-import { ProductController } from './routes/product.controller';
+import {
+  ProductController,
+  AdminProductController,
+} from './routes/product.controller';
 import { InventoryController } from './routes/inventory.controller';
 import { DiscountController } from './routes/discount.controller';
 import { MediaController } from './routes/media.controller';
@@ -14,6 +17,15 @@ import { CartController } from './routes/cart.controller';
 import { OrderController } from './routes/order.controller';
 import { PaymentController } from './routes/payment.controller';
 import { EventController } from './routes/event.controller';
+import { CheckoutController } from './routes/checkout.controller';
+import { FeatureFlagsController } from './routes/feature-flags.controller';
+import { SystemController } from './routes/system.controller';
+import { AdminUsersController } from './routes/admin-users.controller';
+import {
+  TransactionsController,
+  AdminTransactionsController,
+} from './routes/transactions.controller';
+import { NotificationsController } from './routes/notifications.controller';
 
 @Module({
   imports: [
@@ -54,6 +66,7 @@ import { EventController } from './routes/event.controller';
     ProfileController,
     RoleController,
     ProductController,
+    AdminProductController,
     InventoryController,
     DiscountController,
     MediaController,
@@ -61,6 +74,13 @@ import { EventController } from './routes/event.controller';
     OrderController,
     PaymentController,
     EventController,
+    CheckoutController,
+    FeatureFlagsController,
+    SystemController,
+    AdminUsersController,
+    TransactionsController,
+    AdminTransactionsController,
+    NotificationsController,
   ],
   providers: [AppService],
 })

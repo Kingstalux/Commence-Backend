@@ -1,15 +1,19 @@
 import { Document, Types } from 'mongoose';
 export type OrderStatus = 'PENDING' | 'PAID' | 'FAILED';
-export interface IOrder extends Document {
+export type OrderDocument = Order & Document;
+export declare class Order {
     user_id: Types.ObjectId;
     total_cents: number;
     currency: string;
     status: OrderStatus;
     created_at: Date;
 }
-declare const _default: import("mongoose").Model<IOrder, {}, {}, {}, Document<unknown, {}, IOrder, {}, {}> & IOrder & Required<{
-    _id: unknown;
-}> & {
+export declare const OrderSchema: import("mongoose").Schema<Order, import("mongoose").Model<Order, any, any, any, Document<unknown, any, Order, any, {}> & Order & {
+    _id: Types.ObjectId;
+} & {
     __v: number;
-}, any>;
-export default _default;
+}, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, Order, Document<unknown, {}, import("mongoose").FlatRecord<Order>, {}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & import("mongoose").FlatRecord<Order> & {
+    _id: Types.ObjectId;
+} & {
+    __v: number;
+}>;

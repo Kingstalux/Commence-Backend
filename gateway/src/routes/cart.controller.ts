@@ -1,32 +1,62 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Inject } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Headers,
+  Inject,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 
-@Controller('carts')
+@Controller('api/cart')
 export class CartController {
-  constructor(@Inject('TRANSACTION_SERVICE') private readonly client: ClientProxy) {}
+  constructor(@Inject('USER_SERVICE') private readonly client: ClientProxy) {}
 
   @Get()
-  findAll() {
-    return this.client.send({ cmd: 'findAllCarts' }, {});
+  getCart(@Headers('authorization') token: string) {
+    return this.client.send({ cmd: 'get_cart' }, { token });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.client.send({ cmd: 'findCartById' }, { id });
+  @Post('items')
+  addCartItem(@Body() data: any, @Headers('authorization') token: string) {
+    return this.client.send({ cmd: 'add_cart_item' }, { ...data, token });
   }
 
-  @Post()
-  create(@Body() createCartDto: any) {
-    return this.client.send({ cmd: 'createCart' }, createCartDto);
+  @Put('items/:id')
+  updateCartItem(
+    @Param('id') itemId: string,
+    @Body() data: any,
+    @Headers('authorization') token: string,
+  ) {
+    return this.client.send(
+      { cmd: 'update_cart_item' },
+      { itemId, ...data, token },
+    );
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateCartDto: any) {
-    return this.client.send({ cmd: 'updateCart' }, { id, ...updateCartDto });
+  @Delete('items/:id')
+  removeCartItem(
+    @Param('id') itemId: string,
+    @Headers('authorization') token: string,
+  ) {
+    return this.client.send({ cmd: 'remove_cart_item' }, { itemId, token });
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.client.send({ cmd: 'deleteCart' }, { id });
+  @Delete('clear')
+  clearCart(@Headers('authorization') token: string) {
+    return this.client.send({ cmd: 'clear_cart' }, { token });
+  }
+
+  @Post('discount')
+  applyDiscount(@Body() data: any, @Headers('authorization') token: string) {
+    return this.client.send({ cmd: 'apply_discount' }, { ...data, token });
+  }
+
+  @Delete('discount')
+  removeDiscount(@Headers('authorization') token: string) {
+    return this.client.send({ cmd: 'remove_discount' }, { token });
   }
 }

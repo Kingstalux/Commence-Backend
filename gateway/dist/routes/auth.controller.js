@@ -20,10 +20,19 @@ let AuthController = class AuthController {
         this.client = client;
     }
     signup(signupDto) {
-        return this.client.send({ cmd: 'signup' }, signupDto);
+        return this.client.send({ cmd: 'auth_signup' }, signupDto);
     }
     login(loginDto) {
-        return this.client.send({ cmd: 'login' }, loginDto);
+        return this.client.send({ cmd: 'auth_login' }, loginDto);
+    }
+    logout(data) {
+        return this.client.send({ cmd: 'auth_logout' }, data);
+    }
+    refreshToken(data) {
+        return this.client.send({ cmd: 'auth_refresh' }, data);
+    }
+    getMe(token) {
+        return this.client.send({ cmd: 'auth_me' }, { token });
     }
 };
 exports.AuthController = AuthController;
@@ -41,8 +50,29 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('logout'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "logout", null);
+__decorate([
+    (0, common_1.Post)('refresh'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "refreshToken", null);
+__decorate([
+    (0, common_1.Get)('me'),
+    __param(0, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "getMe", null);
 exports.AuthController = AuthController = __decorate([
-    (0, common_1.Controller)('auth'),
+    (0, common_1.Controller)('api/auth'),
     __param(0, (0, common_1.Inject)('USER_SERVICE')),
     __metadata("design:paramtypes", [microservices_1.ClientProxy])
 ], AuthController);

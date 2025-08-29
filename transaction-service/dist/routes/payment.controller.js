@@ -8,12 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentController = void 0;
 const common_1 = require("@nestjs/common");
+const microservices_1 = require("@nestjs/microservices");
 const app_service_1 = require("../app.service");
 let PaymentController = class PaymentController {
     constructor(paymentService) {
@@ -22,57 +20,61 @@ let PaymentController = class PaymentController {
     findAll() {
         return this.paymentService.findAllPayments();
     }
-    findOne(id) {
-        return this.paymentService.findPaymentById(id);
+    findOne(data) {
+        return this.paymentService.findPaymentById(data.id);
     }
     create(createPaymentDto) {
         return this.paymentService.createPayment(createPaymentDto);
     }
-    update(id, updatePaymentDto) {
-        return this.paymentService.updatePayment(id, updatePaymentDto);
+    processPayment(data) {
+        return this.paymentService.processPayment(data);
     }
-    remove(id) {
-        return this.paymentService.deletePayment(id);
+    refundPayment(data) {
+        return this.paymentService.refundPayment(data.id, data.amount);
+    }
+    update(data) {
+        return this.paymentService.updatePayment(data.id, data);
     }
 };
 exports.PaymentController = PaymentController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, microservices_1.MessagePattern)({ cmd: 'get_all_payments' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PaymentController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, microservices_1.MessagePattern)({ cmd: 'get_payment_by_id' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], PaymentController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    (0, microservices_1.MessagePattern)({ cmd: 'create_payment' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], PaymentController.prototype, "create", null);
 __decorate([
-    (0, common_1.Put)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    (0, microservices_1.MessagePattern)({ cmd: 'process_payment' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], PaymentController.prototype, "processPayment", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'refund_payment' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], PaymentController.prototype, "refundPayment", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_payment' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], PaymentController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], PaymentController.prototype, "remove", null);
 exports.PaymentController = PaymentController = __decorate([
-    (0, common_1.Controller)('payments'),
+    (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.PaymentService])
 ], PaymentController);
 //# sourceMappingURL=payment.controller.js.map

@@ -2,9 +2,10 @@ import { ClientProxy } from '@nestjs/microservices';
 export declare class OrderController {
     private readonly client;
     constructor(client: ClientProxy);
-    findAll(): import("rxjs").Observable<any>;
-    findOne(id: string): import("rxjs").Observable<any>;
-    create(createOrderDto: any): import("rxjs").Observable<any>;
-    update(id: string, updateOrderDto: any): import("rxjs").Observable<any>;
-    remove(id: string): import("rxjs").Observable<any>;
+    getOrders(token: string): import("rxjs").Observable<any>;
+    getOrderById(id: string, token: string): import("rxjs").Observable<any>;
+    createOrder(createOrderDto: any, token: string): import("rxjs").Observable<any>;
+    cancelOrder(id: string, token: string): import("rxjs").Observable<any>;
+    getOrderReceipt(id: string, token: string): import("rxjs").Observable<any>;
+    refundOrder(id: string, data: any, token: string): import("rxjs").Observable<any>;
 }

@@ -1,32 +1,38 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { PaymentService } from '../app.service';
 
-@Controller('payments')
+@Controller()
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  @Get()
+  @MessagePattern({ cmd: 'get_all_payments' })
   findAll() {
     return this.paymentService.findAllPayments();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.paymentService.findPaymentById(id);
+  @MessagePattern({ cmd: 'get_payment_by_id' })
+  findOne(data: any) {
+    return this.paymentService.findPaymentById(data.id);
   }
 
-  @Post()
-  create(@Body() createPaymentDto: any) {
+  @MessagePattern({ cmd: 'create_payment' })
+  create(createPaymentDto: any) {
     return this.paymentService.createPayment(createPaymentDto);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updatePaymentDto: any) {
-    return this.paymentService.updatePayment(id, updatePaymentDto);
+  @MessagePattern({ cmd: 'process_payment' })
+  processPayment(data: any) {
+    return this.paymentService.processPayment(data);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.paymentService.deletePayment(id);
+  @MessagePattern({ cmd: 'refund_payment' })
+  refundPayment(data: any) {
+    return this.paymentService.refundPayment(data.id, data.amount);
+  }
+
+  @MessagePattern({ cmd: 'update_payment' })
+  update(data: any) {
+    return this.paymentService.updatePayment(data.id, data);
   }
 }

@@ -1,32 +1,38 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { CartService } from '../app.service';
 
-@Controller('carts')
+@Controller()
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
-  @Get()
+  @MessagePattern({ cmd: 'get_all_carts' })
   findAll() {
     return this.cartService.findAllCarts();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartService.findCartById(id);
+  @MessagePattern({ cmd: 'get_cart_by_id' })
+  findOne(data: any) {
+    return this.cartService.findCartById(data.id);
   }
 
-  @Post()
-  create(@Body() createCartDto: any) {
+  @MessagePattern({ cmd: 'get_cart_by_user_id' })
+  findByUserId(data: any) {
+    return this.cartService.findCartByUserId(data.userId);
+  }
+
+  @MessagePattern({ cmd: 'create_cart' })
+  create(createCartDto: any) {
     return this.cartService.createCart(createCartDto);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateCartDto: any) {
-    return this.cartService.updateCart(id, updateCartDto);
+  @MessagePattern({ cmd: 'update_cart' })
+  update(data: any) {
+    return this.cartService.updateCart(data.id, data);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartService.deleteCart(id);
+  @MessagePattern({ cmd: 'delete_cart' })
+  remove(data: any) {
+    return this.cartService.deleteCart(data.id);
   }
 }

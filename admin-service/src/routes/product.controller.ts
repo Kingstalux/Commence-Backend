@@ -1,32 +1,38 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { ProductService } from '../app.service';
 
-@Controller('products')
+@Controller()
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Get()
+  @MessagePattern({ cmd: 'admin_get_products' })
   findAll() {
     return this.productService.findAllProducts();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productService.findProductById(id);
+  @MessagePattern({ cmd: 'admin_get_product' })
+  findOne(data: any) {
+    return this.productService.findProductById(data.id);
   }
 
-  @Post()
-  create(@Body() createProductDto: any) {
+  @MessagePattern({ cmd: 'admin_create_product' })
+  create(createProductDto: any) {
     return this.productService.createProduct(createProductDto);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: any) {
-    return this.productService.updateProduct(id, updateProductDto);
+  @MessagePattern({ cmd: 'admin_update_product' })
+  update(data: any) {
+    return this.productService.updateProduct(data.id, data);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productService.deleteProduct(id);
+  @MessagePattern({ cmd: 'admin_delete_product' })
+  remove(data: any) {
+    return this.productService.deleteProduct(data.id);
+  }
+
+  @MessagePattern({ cmd: 'admin_bulk_import_products' })
+  bulkImport(data: any) {
+    return this.productService.bulkImportProducts(data.products);
   }
 }

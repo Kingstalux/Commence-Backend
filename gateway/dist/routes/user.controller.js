@@ -19,7 +19,8 @@ let UserController = class UserController {
     constructor(client) {
         this.client = client;
     }
-    findAll() {
+    async findAll() {
+        console.log('findAllUsers');
         return this.client.send({ cmd: 'findAllUsers' }, {});
     }
     findOne(id) {
@@ -40,7 +41,7 @@ __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], UserController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),

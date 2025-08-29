@@ -8,12 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DiscountController = void 0;
 const common_1 = require("@nestjs/common");
+const microservices_1 = require("@nestjs/microservices");
 const app_service_1 = require("../app.service");
 let DiscountController = class DiscountController {
     constructor(discountService) {
@@ -22,57 +20,61 @@ let DiscountController = class DiscountController {
     findAll() {
         return this.discountService.findAllDiscounts();
     }
-    findOne(id) {
-        return this.discountService.findDiscountById(id);
+    findOne(data) {
+        return this.discountService.findDiscountById(data.id);
     }
     create(createDiscountDto) {
         return this.discountService.createDiscount(createDiscountDto);
     }
-    update(id, updateDiscountDto) {
-        return this.discountService.updateDiscount(id, updateDiscountDto);
+    update(data) {
+        return this.discountService.updateDiscount(data.id, data);
     }
-    remove(id) {
-        return this.discountService.deleteDiscount(id);
+    remove(data) {
+        return this.discountService.deleteDiscount(data.id);
+    }
+    validateCode(data) {
+        return this.discountService.validateDiscountCode(data.code);
     }
 };
 exports.DiscountController = DiscountController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_get_discounts' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], DiscountController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_get_discount' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DiscountController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_create_discount' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DiscountController.prototype, "create", null);
 __decorate([
-    (0, common_1.Put)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_update_discount' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DiscountController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_delete_discount' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DiscountController.prototype, "remove", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_validate_discount' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], DiscountController.prototype, "validateCode", null);
 exports.DiscountController = DiscountController = __decorate([
-    (0, common_1.Controller)('discounts'),
+    (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.DiscountService])
 ], DiscountController);
 //# sourceMappingURL=discount.controller.js.map

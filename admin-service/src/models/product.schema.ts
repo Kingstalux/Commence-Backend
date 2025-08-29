@@ -1,27 +1,39 @@
-import { Schema, model, Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-export interface IProduct extends Document {
+export type ProductDocument = Product & Document;
+
+@Schema({
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  versionKey: false,
+})
+export class Product {
+  @Prop({ required: true, unique: true })
   sku: string;
+
+  @Prop({ required: true })
   title: string;
-  description: string;
+
+  @Prop()
+  description?: string;
+
+  @Prop({ required: true })
   price_cents: number;
+
+  @Prop({ required: true })
   currency: string;
+
+  @Prop({ default: 0 })
   stock: number;
+
+  @Prop({ default: true })
   is_active: boolean;
+
+  @Prop({ default: Date.now })
   created_at: Date;
+
+  @Prop({ default: Date.now })
   updated_at: Date;
 }
 
-const ProductSchema = new Schema<IProduct>({
-  sku: { type: String, required: true, unique: true },
-  title: { type: String, required: true },
-  description: { type: String },
-  price_cents: { type: Number, required: true },
-  currency: { type: String, required: true },
-  stock: { type: Number, default: 0 },
-  is_active: { type: Boolean, default: true },
-  created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now },
-}, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }, versionKey: false });
-
-export default model<IProduct>('Product', ProductSchema);
+export const ProductSchema = SchemaFactory.createForClass(Product);

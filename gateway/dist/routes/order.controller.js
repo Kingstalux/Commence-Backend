@@ -19,60 +19,76 @@ let OrderController = class OrderController {
     constructor(client) {
         this.client = client;
     }
-    findAll() {
-        return this.client.send({ cmd: 'findAllOrders' }, {});
+    getOrders(token) {
+        return this.client.send({ cmd: 'get_orders' }, { token });
     }
-    findOne(id) {
-        return this.client.send({ cmd: 'findOrderById' }, { id });
+    getOrderById(id, token) {
+        return this.client.send({ cmd: 'get_order_by_id' }, { id, token });
     }
-    create(createOrderDto) {
-        return this.client.send({ cmd: 'createOrder' }, createOrderDto);
+    createOrder(createOrderDto, token) {
+        return this.client.send({ cmd: 'create_order' }, { ...createOrderDto, token });
     }
-    update(id, updateOrderDto) {
-        return this.client.send({ cmd: 'updateOrder' }, { id, ...updateOrderDto });
+    cancelOrder(id, token) {
+        return this.client.send({ cmd: 'cancel_order' }, { id, token });
     }
-    remove(id) {
-        return this.client.send({ cmd: 'deleteOrder' }, { id });
+    getOrderReceipt(id, token) {
+        return this.client.send({ cmd: 'get_order_receipt' }, { id, token });
+    }
+    refundOrder(id, data, token) {
+        return this.client.send({ cmd: 'refund_order' }, { id, ...data, token });
     }
 };
 exports.OrderController = OrderController;
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Headers)('authorization')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], OrderController.prototype, "findAll", null);
+], OrderController.prototype, "getOrders", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Headers)('authorization')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
-], OrderController.prototype, "findOne", null);
+], OrderController.prototype, "getOrderById", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)('authorization')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
-], OrderController.prototype, "create", null);
+], OrderController.prototype, "createOrder", null);
 __decorate([
-    (0, common_1.Put)(':id'),
+    (0, common_1.Post)(':id/cancel'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], OrderController.prototype, "cancelOrder", null);
+__decorate([
+    (0, common_1.Get)(':id/receipt'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], OrderController.prototype, "getOrderReceipt", null);
+__decorate([
+    (0, common_1.Post)(':id/refund'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Headers)('authorization')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, Object, String]),
     __metadata("design:returntype", void 0)
-], OrderController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], OrderController.prototype, "remove", null);
+], OrderController.prototype, "refundOrder", null);
 exports.OrderController = OrderController = __decorate([
-    (0, common_1.Controller)('orders'),
+    (0, common_1.Controller)('api/orders'),
     __param(0, (0, common_1.Inject)('TRANSACTION_SERVICE')),
     __metadata("design:paramtypes", [microservices_1.ClientProxy])
 ], OrderController);

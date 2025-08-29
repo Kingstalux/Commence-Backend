@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Inject } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Inject,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 
 @Controller('users')
@@ -6,7 +15,8 @@ export class UserController {
   constructor(@Inject('USER_SERVICE') private readonly client: ClientProxy) {}
 
   @Get()
-  findAll() {
+  async findAll() {
+    console.log('findAllUsers');
     return this.client.send({ cmd: 'findAllUsers' }, {});
   }
 

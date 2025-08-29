@@ -1,32 +1,33 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { MediaService } from '../app.service';
 
-@Controller('media')
+@Controller()
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 
-  @Get()
+  @MessagePattern({ cmd: 'admin_get_media' })
   findAll() {
     return this.mediaService.findAllMedia();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.mediaService.findMediaById(id);
+  @MessagePattern({ cmd: 'admin_get_media_item' })
+  findOne(data: any) {
+    return this.mediaService.findMediaById(data.id);
   }
 
-  @Post()
-  create(@Body() createMediaDto: any) {
+  @MessagePattern({ cmd: 'admin_create_media' })
+  create(createMediaDto: any) {
     return this.mediaService.createMedia(createMediaDto);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateMediaDto: any) {
-    return this.mediaService.updateMedia(id, updateMediaDto);
+  @MessagePattern({ cmd: 'admin_update_media' })
+  update(data: any) {
+    return this.mediaService.updateMedia(data.id, data);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.mediaService.deleteMedia(id);
+  @MessagePattern({ cmd: 'admin_delete_media' })
+  remove(data: any) {
+    return this.mediaService.deleteMedia(data.id);
   }
 }

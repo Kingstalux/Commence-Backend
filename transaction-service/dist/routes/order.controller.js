@@ -8,71 +8,76 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderController = void 0;
 const common_1 = require("@nestjs/common");
+const microservices_1 = require("@nestjs/microservices");
 const app_service_1 = require("../app.service");
 let OrderController = class OrderController {
     constructor(orderService) {
         this.orderService = orderService;
     }
-    findAll() {
+    getOrders(data) {
+        if (data.userId) {
+            return this.orderService.getUserOrders(data.userId);
+        }
         return this.orderService.findAllOrders();
     }
-    findOne(id) {
-        return this.orderService.findOrderById(id);
+    findOne(data) {
+        return this.orderService.findOrderById(data.id);
     }
     create(createOrderDto) {
         return this.orderService.createOrder(createOrderDto);
     }
-    update(id, updateOrderDto) {
-        return this.orderService.updateOrder(id, updateOrderDto);
+    cancelOrder(data) {
+        return this.orderService.cancelOrder(data.id);
     }
-    remove(id) {
-        return this.orderService.deleteOrder(id);
+    getOrderReceipt(data) {
+        return this.orderService.getOrderReceipt(data.id);
+    }
+    refundOrder(data) {
+        return this.orderService.refundOrder(data.id, data);
     }
 };
 exports.OrderController = OrderController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, microservices_1.MessagePattern)({ cmd: 'get_orders' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], OrderController.prototype, "findAll", null);
+], OrderController.prototype, "getOrders", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, microservices_1.MessagePattern)({ cmd: 'get_order_by_id' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], OrderController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    (0, microservices_1.MessagePattern)({ cmd: 'create_order' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], OrderController.prototype, "create", null);
 __decorate([
-    (0, common_1.Put)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    (0, microservices_1.MessagePattern)({ cmd: 'cancel_order' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], OrderController.prototype, "update", null);
+], OrderController.prototype, "cancelOrder", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, microservices_1.MessagePattern)({ cmd: 'get_order_receipt' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], OrderController.prototype, "remove", null);
+], OrderController.prototype, "getOrderReceipt", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'refund_order' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], OrderController.prototype, "refundOrder", null);
 exports.OrderController = OrderController = __decorate([
-    (0, common_1.Controller)('orders'),
+    (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.OrderService])
 ], OrderController);
 //# sourceMappingURL=order.controller.js.map

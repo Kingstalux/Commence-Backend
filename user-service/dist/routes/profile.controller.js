@@ -8,42 +8,68 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfileController = void 0;
 const common_1 = require("@nestjs/common");
+const microservices_1 = require("@nestjs/microservices");
 const app_service_1 = require("../app.service");
 let ProfileController = class ProfileController {
     constructor(userService) {
         this.userService = userService;
     }
-    getProfile(id) {
-        return this.userService.getProfile(id);
+    updateProfile(data) {
+        const userId = data.userId || data.id;
+        return this.userService.updateProfile(userId, data);
     }
-    updateProfile(id, updateProfileDto) {
-        return this.userService.updateProfile(id, updateProfileDto);
+    updatePassword(data) {
+        return this.userService.updatePassword(data);
+    }
+    deleteAccount(data) {
+        const userId = data.userId || data.id;
+        return this.userService.deleteAccount(userId);
+    }
+    getPreferences(data) {
+        const userId = data.userId || data.id;
+        return this.userService.getUserPreferences(userId);
+    }
+    updatePreferences(data) {
+        const userId = data.userId || data.id;
+        return this.userService.updateUserPreferences(userId, data.preferences);
     }
 };
 exports.ProfileController = ProfileController;
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, microservices_1.MessagePattern)({ cmd: 'update_profile' }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], ProfileController.prototype, "getProfile", null);
-__decorate([
-    (0, common_1.Put)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ProfileController.prototype, "updateProfile", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_password' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProfileController.prototype, "updatePassword", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'delete_account' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProfileController.prototype, "deleteAccount", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'get_preferences' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProfileController.prototype, "getPreferences", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_preferences' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProfileController.prototype, "updatePreferences", null);
 exports.ProfileController = ProfileController = __decorate([
-    (0, common_1.Controller)('profiles'),
+    (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.UserService])
 ], ProfileController);
 //# sourceMappingURL=profile.controller.js.map

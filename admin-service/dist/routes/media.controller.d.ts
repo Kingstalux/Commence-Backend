@@ -2,9 +2,9 @@ import { MediaService } from '../app.service';
 export declare class MediaController {
     private readonly mediaService;
     constructor(mediaService: MediaService);
-    findAll(): any[];
-    findOne(id: string): {};
-    create(createMediaDto: any): {};
-    update(id: string, updateMediaDto: any): {};
-    remove(id: string): {};
+    findAll(): Promise<any[]>;
+    findOne(data: any): Promise<any>;
+    create(createMediaDto: any): Promise<any>;
+    update(data: any): Promise<any>;
+    remove(data: any): Promise<any>;
 }

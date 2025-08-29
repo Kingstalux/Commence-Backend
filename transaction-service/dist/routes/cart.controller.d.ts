@@ -2,29 +2,10 @@ import { CartService } from '../app.service';
 export declare class CartController {
     private readonly cartService;
     constructor(cartService: CartService);
-    findAll(): Promise<(import("mongoose").Document<unknown, {}, import("../models/cart.schema").ICart, {}, {}> & import("../models/cart.schema").ICart & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    })[]>;
-    findOne(id: string): Promise<import("mongoose").Document<unknown, {}, import("../models/cart.schema").ICart, {}, {}> & import("../models/cart.schema").ICart & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    }>;
-    create(createCartDto: any): Promise<import("mongoose").Document<unknown, {}, import("../models/cart.schema").ICart, {}, {}> & import("../models/cart.schema").ICart & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    }>;
-    update(id: string, updateCartDto: any): Promise<import("mongoose").Document<unknown, {}, import("../models/cart.schema").ICart, {}, {}> & import("../models/cart.schema").ICart & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    }>;
-    remove(id: string): Promise<import("mongoose").Document<unknown, {}, import("../models/cart.schema").ICart, {}, {}> & import("../models/cart.schema").ICart & Required<{
-        _id: unknown;
-    }> & {
-        __v: number;
-    }>;
+    findAll(): Promise<any[]>;
+    findOne(data: any): Promise<any>;
+    findByUserId(data: any): Promise<any>;
+    create(createCartDto: any): Promise<any>;
+    update(data: any): Promise<any>;
+    remove(data: any): Promise<any>;
 }

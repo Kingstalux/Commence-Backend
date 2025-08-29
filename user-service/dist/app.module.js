@@ -8,16 +8,38 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
+const mongoose_1 = require("@nestjs/mongoose");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const auth_controller_1 = require("./routes/auth.controller");
+const profile_controller_1 = require("./routes/profile.controller");
+const role_controller_1 = require("./routes/role.controller");
+const user_controller_1 = require("./routes/user.controller");
+const payment_methods_controller_1 = require("./routes/payment-methods.controller");
+const cart_controller_1 = require("./routes/cart.controller");
+const user_schema_1 = require("./models/user.schema");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
-        controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        imports: [
+            mongoose_1.MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/userservice', {
+                serverSelectionTimeoutMS: 5000,
+                socketTimeoutMS: 45000,
+            }),
+            mongoose_1.MongooseModule.forFeature([{ name: user_schema_1.User.name, schema: user_schema_1.UserSchema }]),
+        ],
+        controllers: [
+            app_controller_1.AppController,
+            auth_controller_1.AuthController,
+            profile_controller_1.ProfileController,
+            role_controller_1.RoleController,
+            user_controller_1.UserController,
+            payment_methods_controller_1.PaymentMethodsController,
+            cart_controller_1.CartController,
+        ],
+        providers: [app_service_1.AppService, app_service_1.UserService, app_service_1.PaymentMethodService, app_service_1.CartService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map
