@@ -1,21 +1,32 @@
+import { JwtService } from '@nestjs/jwt';
 import { PaymentMethodService } from '../app.service';
 export declare class PaymentMethodsController {
     private readonly paymentMethodService;
-    constructor(paymentMethodService: PaymentMethodService);
-    getPaymentMethods(data: any): Promise<{
-        id: string;
-        userId: string;
-        type: string;
-        last4: string;
-        isDefault: boolean;
-    }[]>;
-    addPaymentMethod(data: any): Promise<any>;
-    updatePaymentMethod(data: any): Promise<any>;
+    private readonly jwtService;
+    constructor(paymentMethodService: PaymentMethodService, jwtService: JwtService);
+    private extractUserIdFromToken;
+    getPaymentMethods(data: any): Promise<(import("mongoose").Document<unknown, {}, import("../models/payment-method.schema").PaymentMethodDocument, {}, {}> & import("../models/payment-method.schema").PaymentMethod & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    })[]>;
+    addPaymentMethod(data: any): Promise<import("mongoose").Document<unknown, {}, import("../models/payment-method.schema").PaymentMethodDocument, {}, {}> & import("../models/payment-method.schema").PaymentMethod & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    updatePaymentMethod(data: any): Promise<import("mongoose").Document<unknown, {}, import("../models/payment-method.schema").PaymentMethodDocument, {}, {}> & import("../models/payment-method.schema").PaymentMethod & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
     deletePaymentMethod(data: any): Promise<{
         success: boolean;
+        deletedId: string;
     }>;
-    setDefaultPaymentMethod(data: any): Promise<{
-        id: string;
-        isDefault: boolean;
+    setDefaultPaymentMethod(data: any): Promise<import("mongoose").Document<unknown, {}, import("../models/payment-method.schema").PaymentMethodDocument, {}, {}> & import("../models/payment-method.schema").PaymentMethod & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
     }>;
 }

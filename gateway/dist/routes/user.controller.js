@@ -20,7 +20,6 @@ let UserController = class UserController {
         this.client = client;
     }
     async findAll() {
-        console.log('findAllUsers');
         return this.client.send({ cmd: 'findAllUsers' }, {});
     }
     findOne(id) {

@@ -12,22 +12,44 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderController = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
+const jwt_1 = require("@nestjs/jwt");
 const app_service_1 = require("../app.service");
 let OrderController = class OrderController {
-    constructor(orderService) {
+    constructor(orderService, jwtService) {
         this.orderService = orderService;
+        this.jwtService = jwtService;
+    }
+    extractUserIdFromToken(token) {
+        try {
+            const cleanToken = token.replace(/^Bearer\s+/, '');
+            console.log('OrderController: Attempting to verify token...');
+            const payload = this.jwtService.verify(cleanToken);
+            console.log('OrderController: Token verified successfully, userId:', payload.sub);
+            return payload.sub;
+        }
+        catch (error) {
+            console.error('OrderController: Invalid or expired token:', error.message);
+            console.error('OrderController: Token verification failed for token length:', token?.length);
+            throw new Error('Invalid or expired authentication token');
+        }
     }
     getOrders(data) {
-        if (data.userId) {
-            return this.orderService.getUserOrders(data.userId);
+        if (data.token) {
+            const userId = this.extractUserIdFromToken(data.token);
+            return this.orderService.getUserOrders(userId);
         }
         return this.orderService.findAllOrders();
     }
     findOne(data) {
         return this.orderService.findOrderById(data.id);
     }
-    create(createOrderDto) {
-        return this.orderService.createOrder(createOrderDto);
+    create(data) {
+        const userId = this.extractUserIdFromToken(data.token);
+        return this.orderService.createOrder({ ...data, userId });
+    }
+    checkout(data) {
+        const userId = this.extractUserIdFromToken(data.token);
+        return this.orderService.createOrderFromCheckout({ ...data, userId });
     }
     cancelOrder(data) {
         return this.orderService.cancelOrder(data.id);
@@ -59,6 +81,12 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], OrderController.prototype, "create", null);
 __decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'checkout' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], OrderController.prototype, "checkout", null);
+__decorate([
     (0, microservices_1.MessagePattern)({ cmd: 'cancel_order' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -78,6 +106,7 @@ __decorate([
 ], OrderController.prototype, "refundOrder", null);
 exports.OrderController = OrderController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [app_service_1.OrderService])
+    __metadata("design:paramtypes", [app_service_1.OrderService,
+        jwt_1.JwtService])
 ], OrderController);
 //# sourceMappingURL=order.controller.js.map

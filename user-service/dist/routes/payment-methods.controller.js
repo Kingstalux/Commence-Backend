@@ -12,16 +12,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentMethodsController = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
+const jwt_1 = require("@nestjs/jwt");
 const app_service_1 = require("../app.service");
 let PaymentMethodsController = class PaymentMethodsController {
-    constructor(paymentMethodService) {
+    constructor(paymentMethodService, jwtService) {
         this.paymentMethodService = paymentMethodService;
+        this.jwtService = jwtService;
+    }
+    extractUserIdFromToken(token) {
+        try {
+            const cleanToken = token.replace(/^Bearer\s+/, '');
+            const payload = this.jwtService.verify(cleanToken);
+            return payload.sub;
+        }
+        catch (error) {
+            console.error('PaymentMethodsController: Invalid or expired token:', error.message);
+            throw new Error('Invalid or expired authentication token');
+        }
     }
     getPaymentMethods(data) {
-        return this.paymentMethodService.getUserPaymentMethods(data.userId);
+        const userId = this.extractUserIdFromToken(data.token);
+        return this.paymentMethodService.getUserPaymentMethods(userId);
     }
     addPaymentMethod(data) {
-        return this.paymentMethodService.addPaymentMethod(data.userId, data);
+        const userId = this.extractUserIdFromToken(data.token);
+        return this.paymentMethodService.addPaymentMethod(userId, data);
     }
     updatePaymentMethod(data) {
         return this.paymentMethodService.updatePaymentMethod(data.id, data);
@@ -30,7 +45,8 @@ let PaymentMethodsController = class PaymentMethodsController {
         return this.paymentMethodService.deletePaymentMethod(data.id);
     }
     setDefaultPaymentMethod(data) {
-        return this.paymentMethodService.setDefaultPaymentMethod(data.id, data.userId);
+        const userId = this.extractUserIdFromToken(data.token);
+        return this.paymentMethodService.setDefaultPaymentMethod(data.id, userId);
     }
 };
 exports.PaymentMethodsController = PaymentMethodsController;
@@ -66,6 +82,7 @@ __decorate([
 ], PaymentMethodsController.prototype, "setDefaultPaymentMethod", null);
 exports.PaymentMethodsController = PaymentMethodsController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [app_service_1.PaymentMethodService])
+    __metadata("design:paramtypes", [app_service_1.PaymentMethodService,
+        jwt_1.JwtService])
 ], PaymentMethodsController);
 //# sourceMappingURL=payment-methods.controller.js.map

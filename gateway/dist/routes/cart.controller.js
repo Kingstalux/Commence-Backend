@@ -40,6 +40,9 @@ let CartController = class CartController {
     removeDiscount(token) {
         return this.client.send({ cmd: 'remove_discount' }, { token });
     }
+    likeCartItem(itemId, data, token) {
+        return this.client.send({ cmd: 'like_cart_item' }, { itemId, ...data, token });
+    }
 };
 exports.CartController = CartController;
 __decorate([
@@ -96,6 +99,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], CartController.prototype, "removeDiscount", null);
+__decorate([
+    (0, common_1.Post)('items/:id/like'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, String]),
+    __metadata("design:returntype", void 0)
+], CartController.prototype, "likeCartItem", null);
 exports.CartController = CartController = __decorate([
     (0, common_1.Controller)('api/cart'),
     __param(0, (0, common_1.Inject)('USER_SERVICE')),

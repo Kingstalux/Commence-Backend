@@ -1,5 +1,5 @@
 // Simple script to seed the database with test data
-import { MongoClient } from 'mongodb';
+const { MongoClient } = require('mongodb');
 
 async function seedDatabase() {
   const client = new MongoClient('mongodb://localhost:27017');
@@ -19,27 +19,8 @@ async function seedDatabase() {
     const testUsers = [
       {
         name: 'John Doe',
-        email: 'john@example.com',
-        password: 'password123', // In production, this should be hashed
-      },
-      {
-        name: 'Jane Smith',
-        email: 'jane@example.com',
-        password: 'password123',
-      },
-      {
-        name: 'Bob Johnson',
-        email: 'bob@example.com',
-        password: 'password123',
-      },
-      {
-        name: 'Alice Brown',
-        email: 'alice@example.com',
-        password: 'password123',
-      },
-      {
-        name: 'Charlie Wilson',
-        email: 'charlie@example.com',
+        email: 'king@gmail.com',
+        role: 'admin',
         password: 'password123',
       },
     ];

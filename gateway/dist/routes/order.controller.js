@@ -28,6 +28,9 @@ let OrderController = class OrderController {
     createOrder(createOrderDto, token) {
         return this.client.send({ cmd: 'create_order' }, { ...createOrderDto, token });
     }
+    checkout(checkoutData, token) {
+        return this.client.send({ cmd: 'checkout' }, { ...checkoutData, token });
+    }
     cancelOrder(id, token) {
         return this.client.send({ cmd: 'cancel_order' }, { id, token });
     }
@@ -62,6 +65,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], OrderController.prototype, "createOrder", null);
+__decorate([
+    (0, common_1.Post)('checkout'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)('authorization')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], OrderController.prototype, "checkout", null);
 __decorate([
     (0, common_1.Post)(':id/cancel'),
     __param(0, (0, common_1.Param)('id')),

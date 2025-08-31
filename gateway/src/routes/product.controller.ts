@@ -11,12 +11,10 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 
-// Public Product Catalog (Transaction Service)
+// Public Product Catalog (User Service - where products are stored)
 @Controller('api/products')
 export class ProductController {
-  constructor(
-    @Inject('TRANSACTION_SERVICE') private readonly client: ClientProxy,
-  ) {}
+  constructor(@Inject('USER_SERVICE') private readonly client: ClientProxy) {}
 
   @Get()
   getProducts(@Query() filters: any) {

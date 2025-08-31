@@ -71,7 +71,7 @@ __decorate([
 ], ProductController.prototype, "getProductById", null);
 exports.ProductController = ProductController = __decorate([
     (0, common_1.Controller)('api/products'),
-    __param(0, (0, common_1.Inject)('TRANSACTION_SERVICE')),
+    __param(0, (0, common_1.Inject)('USER_SERVICE')),
     __metadata("design:paramtypes", [microservices_1.ClientProxy])
 ], ProductController);
 let AdminProductController = class AdminProductController {

@@ -1,7 +1,10 @@
+import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../app.service';
 export declare class ProfileController {
     private readonly userService;
-    constructor(userService: UserService);
+    private readonly jwtService;
+    constructor(userService: UserService, jwtService: JwtService);
+    private extractUserIdFromToken;
     updateProfile(data: any): Promise<import("mongoose").Document<unknown, {}, import("../models/user.schema").UserDocument, {}, {}> & import("../models/user.schema").User & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
         _id: unknown;
     }> & {

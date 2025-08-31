@@ -59,4 +59,16 @@ export class CartController {
   removeDiscount(@Headers('authorization') token: string) {
     return this.client.send({ cmd: 'remove_discount' }, { token });
   }
+
+  @Post('items/:id/like')
+  likeCartItem(
+    @Param('id') itemId: string,
+    @Body() data: any,
+    @Headers('authorization') token: string,
+  ) {
+    return this.client.send(
+      { cmd: 'like_cart_item' },
+      { itemId, ...data, token },
+    );
+  }
 }

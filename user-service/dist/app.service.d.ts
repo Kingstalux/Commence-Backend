@@ -1,11 +1,16 @@
+import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './models/user.schema';
+import { Cart, CartDocument } from './models/cart.schema';
+import { ProductModel, ProductDocument } from './models/product.schema';
+import { PaymentMethod, PaymentMethodDocument } from './models/payment-method.schema';
 export declare class AppService {
     getHello(): string;
 }
 export declare class UserService {
     private userModel;
-    constructor(userModel: Model<UserDocument>);
+    private jwtService;
+    constructor(userModel: Model<UserDocument>, jwtService: JwtService);
     findAllUsers(): Promise<(import("mongoose").Document<unknown, {}, UserDocument, {}, {}> & User & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
         _id: unknown;
     }> & {
@@ -47,10 +52,11 @@ export declare class UserService {
         __v: number;
     }>;
     login(loginDto: any): Promise<{
-        user: import("mongoose").Document<unknown, {}, UserDocument, {}, {}> & User & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
-            _id: unknown;
-        }> & {
-            __v: number;
+        user: {
+            id: unknown;
+            email: string;
+            name: string;
+            preferences: any;
         };
         token: string;
     }>;
@@ -62,9 +68,10 @@ export declare class UserService {
         token: string;
     }>;
     getMe(data: any): Promise<{
-        id: string;
+        id: unknown;
         email: string;
         name: string;
+        preferences: any;
     }>;
     getProfile(id: string): Promise<import("mongoose").Document<unknown, {}, UserDocument, {}, {}> & User & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
         _id: unknown;
@@ -108,30 +115,85 @@ export declare class UserService {
     }>;
 }
 export declare class PaymentMethodService {
-    getUserPaymentMethods(userId: string): Promise<{
-        id: string;
-        userId: string;
-        type: string;
-        last4: string;
-        isDefault: boolean;
-    }[]>;
-    addPaymentMethod(userId: string, paymentMethodDto: any): Promise<any>;
-    updatePaymentMethod(id: string, updateDto: any): Promise<any>;
+    private paymentMethodModel;
+    constructor(paymentMethodModel: Model<PaymentMethodDocument>);
+    getUserPaymentMethods(userId: string): Promise<(import("mongoose").Document<unknown, {}, PaymentMethodDocument, {}, {}> & PaymentMethod & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    })[]>;
+    addPaymentMethod(userId: string, paymentMethodDto: any): Promise<import("mongoose").Document<unknown, {}, PaymentMethodDocument, {}, {}> & PaymentMethod & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    updatePaymentMethod(id: string, updateDto: any): Promise<import("mongoose").Document<unknown, {}, PaymentMethodDocument, {}, {}> & PaymentMethod & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
     deletePaymentMethod(id: string): Promise<{
         success: boolean;
+        deletedId: string;
     }>;
-    setDefaultPaymentMethod(id: string, userId: string): Promise<{
-        id: string;
-        isDefault: boolean;
+    setDefaultPaymentMethod(id: string, userId: string): Promise<import("mongoose").Document<unknown, {}, PaymentMethodDocument, {}, {}> & PaymentMethod & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
     }>;
 }
+export declare class ProductService {
+    private productModel;
+    constructor(productModel: Model<ProductDocument>);
+    getProducts(filters?: any): Promise<(import("mongoose").Document<unknown, {}, ProductDocument, {}, {}> & ProductModel & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    })[]>;
+    getProductById(id: string): Promise<import("mongoose").Document<unknown, {}, ProductDocument, {}, {}> & ProductModel & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    searchProducts(query: string): Promise<(import("mongoose").Document<unknown, {}, ProductDocument, {}, {}> & ProductModel & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    })[]>;
+    getCategories(): Promise<string[]>;
+    getFeaturedProducts(): Promise<(import("mongoose").Document<unknown, {}, ProductDocument, {}, {}> & ProductModel & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    })[]>;
+}
 export declare class CartService {
-    private carts;
-    getCart(userId: string): Promise<any>;
-    addCartItem(userId: string, itemDto: any): Promise<any>;
-    updateCartItem(userId: string, itemId: string, updateDto: any): Promise<any>;
-    removeCartItem(userId: string, itemId: string): Promise<any>;
-    clearCart(userId: string): Promise<any>;
-    applyDiscount(userId: string, discountCode: string): Promise<any>;
-    removeDiscount(userId: string): Promise<any>;
+    private cartModel;
+    private productModel;
+    constructor(cartModel: Model<CartDocument>, productModel: Model<ProductDocument>);
+    getCart(userId: string): Promise<import("mongoose").Document<unknown, {}, CartDocument, {}, {}> & Cart & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    addCartItem(userId: string, itemDto: any): Promise<import("./models/cart.schema").CartItem>;
+    updateCartItem(userId: string, itemId: string, updateDto: any): Promise<import("./models/cart.schema").CartItem>;
+    removeCartItem(userId: string, itemId: string): Promise<{
+        success: boolean;
+    }>;
+    clearCart(userId: string): Promise<import("mongoose").Document<unknown, {}, CartDocument, {}, {}> & Cart & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    applyDiscount(userId: string, discountCode: string): Promise<import("mongoose").Document<unknown, {}, CartDocument, {}, {}> & Cart & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    removeDiscount(userId: string): Promise<import("mongoose").Document<unknown, {}, CartDocument, {}, {}> & Cart & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
 }

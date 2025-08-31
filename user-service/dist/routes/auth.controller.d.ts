@@ -8,10 +8,11 @@ export declare class AuthController {
         __v: number;
     }>;
     login(loginDto: any): Promise<{
-        user: import("mongoose").Document<unknown, {}, import("../models/user.schema").UserDocument, {}, {}> & import("../models/user.schema").User & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
-            _id: unknown;
-        }> & {
-            __v: number;
+        user: {
+            id: unknown;
+            email: string;
+            name: string;
+            preferences: any;
         };
         token: string;
     }>;
@@ -23,8 +24,9 @@ export declare class AuthController {
         token: string;
     }>;
     getMe(data: any): Promise<{
-        id: string;
+        id: unknown;
         email: string;
         name: string;
+        preferences: any;
     }>;
 }

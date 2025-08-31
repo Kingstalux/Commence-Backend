@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
+const jwt_1 = require("@nestjs/jwt");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const products_controller_1 = require("./routes/products.controller");
@@ -31,6 +32,13 @@ exports.AppModule = AppModule = __decorate([
                 socketTimeoutMS: 45000,
             }),
             mongoose_1.MongooseModule.forFeature([{ name: order_schema_1.Order.name, schema: order_schema_1.OrderSchema }]),
+            jwt_1.JwtModule.register({
+                secret: process.env.JWT_SECRET || 'your-default-secret-key',
+                signOptions: {
+                    expiresIn: '24h',
+                    issuer: 'commence-user-service',
+                },
+            }),
         ],
         controllers: [
             app_controller_1.AppController,

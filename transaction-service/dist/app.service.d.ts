@@ -1,3 +1,5 @@
+import { Model, Types } from 'mongoose';
+import { Order, OrderDocument } from './models/order.schema';
 export declare class AppService {
     getHello(): string;
 }
@@ -53,15 +55,87 @@ export declare class CheckoutService {
     }>;
 }
 export declare class OrderService {
-    private orders;
-    findAllOrders(): Promise<any[]>;
-    getUserOrders(userId: string): Promise<any[]>;
-    findOrderById(id: string): Promise<any>;
-    createOrder(data: any): Promise<any>;
-    updateOrder(id: string, data: any): Promise<any>;
-    cancelOrder(id: string): Promise<any>;
-    getOrderReceipt(id: string): Promise<any>;
-    refundOrder(id: string, data: any): Promise<any>;
+    private orderModel;
+    constructor(orderModel: Model<OrderDocument>);
+    findAllOrders(): Promise<(import("mongoose").Document<unknown, {}, OrderDocument, {}, {}> & Order & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    })[]>;
+    getUserOrders(userId: string): Promise<(import("mongoose").Document<unknown, {}, OrderDocument, {}, {}> & Order & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    })[]>;
+    findOrderById(id: string): Promise<import("mongoose").Document<unknown, {}, OrderDocument, {}, {}> & Order & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    createOrder(data: any): Promise<import("mongoose").Document<unknown, {}, OrderDocument, {}, {}> & Order & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    createOrderFromCheckout(data: any): Promise<{
+        orderId: string;
+        status: string;
+        message: string;
+        estimatedDelivery: string;
+        trackingNumber: string;
+        user_id: Types.ObjectId;
+        total_cents: number;
+        currency: string;
+        created_at: Date;
+        _id: unknown;
+        $locals: Record<string, unknown>;
+        $op: "save" | "validate" | "remove" | null;
+        $where: Record<string, unknown>;
+        baseModelName?: string;
+        collection: import("mongoose").Collection;
+        db: import("mongoose").Connection;
+        errors?: import("mongoose").Error.ValidationError;
+        id?: any;
+        isNew: boolean;
+        schema: import("mongoose").Schema;
+        __v: number;
+    }>;
+    updateOrder(id: string, data: any): Promise<import("mongoose").Document<unknown, {}, OrderDocument, {}, {}> & Order & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    cancelOrder(id: string): Promise<import("mongoose").Document<unknown, {}, OrderDocument, {}, {}> & Order & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    getOrderReceipt(id: string): Promise<{
+        receiptNumber: string;
+        downloadUrl: string;
+        user_id: Types.ObjectId;
+        total_cents: number;
+        currency: string;
+        status: import("./models/order.schema").OrderStatus;
+        created_at: Date;
+        _id: unknown;
+        $locals: Record<string, unknown>;
+        $op: "save" | "validate" | "remove" | null;
+        $where: Record<string, unknown>;
+        baseModelName?: string;
+        collection: import("mongoose").Collection;
+        db: import("mongoose").Connection;
+        errors?: import("mongoose").Error.ValidationError;
+        id?: any;
+        isNew: boolean;
+        schema: import("mongoose").Schema;
+        __v: number;
+    }>;
+    refundOrder(id: string, data: any): Promise<import("mongoose").Document<unknown, {}, OrderDocument, {}, {}> & Order & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
 }
 export declare class TransactionService {
     private transactions;

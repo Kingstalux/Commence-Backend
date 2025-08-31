@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './models/user.schema';
-// Temporarily commenting out other models until they're updated
-// import Role from './models/role.schema';
-// import UserRole from './models/userRole.schema';
-// import Session from './models/session.schema';
+import { Cart, CartDocument } from './models/cart.schema';
+import { ProductModel, ProductDocument } from './models/product.schema';
+import {
+  PaymentMethod,
+  PaymentMethodDocument,
+} from './models/payment-method.schema';
 
 @Injectable()
 export class AppService {
@@ -16,7 +19,10 @@ export class AppService {
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private jwtService: JwtService,
+  ) {}
 
   async findAllUsers() {
     try {
@@ -92,13 +98,26 @@ export class UserService {
         .exec();
 
       if (user) {
-        // Mock session creation until Session model is implemented
-        const mockSession = {
-          id: Date.now().toString(),
-          user_id: user._id,
-          token: `jwt-token-${Date.now()}`,
+        // Create JWT payload with user data
+        const payload = {
+          sub: user._id.toString(), // Subject (user ID)
+          email: user.email,
+          name: user.name,
+          iat: Math.floor(Date.now() / 1000), // Issued at time
         };
-        return { user, token: mockSession.token };
+
+        // Generate JWT token
+        const token = this.jwtService.sign(payload);
+
+        return {
+          user: {
+            id: user._id,
+            email: user.email,
+            name: user.name,
+            preferences: user.preferences,
+          },
+          token,
+        };
       }
       throw new Error('Invalid credentials');
     } catch (error) {
@@ -111,12 +130,55 @@ export class UserService {
   }
 
   async refreshToken(data: any) {
-    const newToken = `new-jwt-token-${Date.now()}`;
-    return { token: newToken };
+    try {
+      // Extract user from current token
+      const cleanToken = data.token.replace(/^Bearer\s+/, '');
+      const payload = this.jwtService.verify(cleanToken);
+
+      // Find the current user
+      const user = await this.userModel.findById(payload.sub).exec();
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Generate new token with fresh expiration
+      const newPayload = {
+        sub: user._id.toString(),
+        email: user.email,
+        name: user.name,
+        iat: Math.floor(Date.now() / 1000),
+      };
+
+      const newToken = this.jwtService.sign(newPayload);
+      return { token: newToken };
+    } catch (error) {
+      console.error('UserService: Error refreshing token:', error);
+      throw new Error('Invalid token for refresh');
+    }
   }
 
   async getMe(data: any) {
-    return { id: '1', email: 'mock@example.com', name: 'Mock User' };
+    try {
+      // Extract user ID from token
+      const cleanToken = data.token.replace(/^Bearer\s+/, '');
+      const payload = this.jwtService.verify(cleanToken);
+
+      // Find and return current user
+      const user = await this.userModel.findById(payload.sub).exec();
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      return {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        preferences: user.preferences,
+      };
+    } catch (error) {
+      console.error('UserService: Error getting user:', error);
+      throw new Error('Invalid token or user not found');
+    }
   }
 
   // Profile methods
@@ -195,95 +257,465 @@ export class UserService {
 
 @Injectable()
 export class PaymentMethodService {
+  constructor(
+    @InjectModel(PaymentMethod.name)
+    private paymentMethodModel: Model<PaymentMethodDocument>,
+  ) {}
   async getUserPaymentMethods(userId: string) {
-    // Mock payment methods - in production, integrate with payment processor
-    return [
-      { id: '1', userId, type: 'card', last4: '1234', isDefault: true },
-      { id: '2', userId, type: 'card', last4: '5678', isDefault: false },
-    ];
+    try {
+      return await this.paymentMethodModel
+        .find({ userId, isActive: true })
+        .sort({ isDefault: -1, createdAt: -1 })
+        .exec();
+    } catch (error) {
+      console.error(
+        'PaymentMethodService: Error getting payment methods:',
+        error,
+      );
+      throw error;
+    }
   }
 
   async addPaymentMethod(userId: string, paymentMethodDto: any) {
-    // Add payment method logic
-    return { id: Date.now().toString(), userId, ...paymentMethodDto };
+    try {
+      // If this is being set as default, remove default from other payment methods
+      if (paymentMethodDto.isDefault) {
+        await this.paymentMethodModel.updateMany(
+          { userId },
+          { isDefault: false },
+        );
+      }
+
+      const paymentMethod = new this.paymentMethodModel({
+        userId,
+        ...paymentMethodDto,
+      });
+
+      return await paymentMethod.save();
+    } catch (error) {
+      console.error(
+        'PaymentMethodService: Error adding payment method:',
+        error,
+      );
+      throw error;
+    }
   }
 
   async updatePaymentMethod(id: string, updateDto: any) {
-    // Update payment method logic
-    return { id, ...updateDto };
+    try {
+      return await this.paymentMethodModel
+        .findByIdAndUpdate(id, updateDto, { new: true })
+        .exec();
+    } catch (error) {
+      console.error(
+        'PaymentMethodService: Error updating payment method:',
+        error,
+      );
+      throw error;
+    }
   }
 
   async deletePaymentMethod(id: string) {
-    // Delete payment method logic
-    return { success: true };
+    try {
+      // Soft delete by setting isActive to false
+      const result = await this.paymentMethodModel
+        .findByIdAndUpdate(id, { isActive: false }, { new: true })
+        .exec();
+
+      if (!result) {
+        throw new Error('Payment method not found');
+      }
+
+      return { success: true, deletedId: id };
+    } catch (error) {
+      console.error(
+        'PaymentMethodService: Error deleting payment method:',
+        error,
+      );
+      throw error;
+    }
   }
 
   async setDefaultPaymentMethod(id: string, userId: string) {
-    // Set default payment method logic
-    return { id, isDefault: true };
+    try {
+      // Remove default from all user's payment methods
+      await this.paymentMethodModel.updateMany(
+        { userId },
+        { isDefault: false },
+      );
+
+      // Set the specified payment method as default
+      const result = await this.paymentMethodModel
+        .findOneAndUpdate(
+          { _id: id, userId, isActive: true },
+          { isDefault: true },
+          { new: true },
+        )
+        .exec();
+
+      if (!result) {
+        throw new Error('Payment method not found or not owned by user');
+      }
+
+      return result;
+    } catch (error) {
+      console.error(
+        'PaymentMethodService: Error setting default payment method:',
+        error,
+      );
+      throw error;
+    }
+  }
+}
+
+@Injectable()
+export class ProductService {
+  constructor(
+    @InjectModel(ProductModel.name)
+    private productModel: Model<ProductDocument>,
+  ) {}
+
+  async getProducts(filters?: any) {
+    try {
+      const query: any = {};
+
+      // Apply filters
+      if (filters?.category) {
+        query.category = filters.category;
+      }
+      if (filters?.inStock !== undefined) {
+        query.inStock = filters.inStock;
+      }
+      if (filters?.minPrice !== undefined) {
+        query.price = { ...query.price, $gte: filters.minPrice };
+      }
+      if (filters?.maxPrice !== undefined) {
+        query.price = { ...query.price, $lte: filters.maxPrice };
+      }
+
+      let mongoQuery = this.productModel.find(query);
+
+      // Apply search
+      if (filters?.search) {
+        const searchRegex = new RegExp(filters.search, 'i');
+        mongoQuery = this.productModel.find({
+          ...query,
+          $or: [
+            { name: searchRegex },
+            { description: searchRegex },
+            { tags: { $in: [searchRegex] } },
+          ],
+        });
+      }
+
+      // Apply sorting
+      if (filters?.sortBy) {
+        switch (filters.sortBy) {
+          case 'price_asc':
+            mongoQuery = mongoQuery.sort({ price: 1 });
+            break;
+          case 'price_desc':
+            mongoQuery = mongoQuery.sort({ price: -1 });
+            break;
+          case 'name_asc':
+            mongoQuery = mongoQuery.sort({ name: 1 });
+            break;
+          case 'name_desc':
+            mongoQuery = mongoQuery.sort({ name: -1 });
+            break;
+          case 'newest':
+            mongoQuery = mongoQuery.sort({ createdAt: -1 });
+            break;
+          default:
+            mongoQuery = mongoQuery.sort({ createdAt: -1 });
+        }
+      } else {
+        mongoQuery = mongoQuery.sort({ createdAt: -1 });
+      }
+
+      return await mongoQuery.exec();
+    } catch (error) {
+      console.error('ProductService: Error getting products:', error);
+      throw error;
+    }
+  }
+
+  async getProductById(id: string) {
+    try {
+      return await this.productModel.findById(id).exec();
+    } catch (error) {
+      console.error('ProductService: Error getting product by ID:', error);
+      throw error;
+    }
+  }
+
+  async searchProducts(query: string) {
+    try {
+      const searchRegex = new RegExp(query, 'i');
+      return await this.productModel
+        .find({
+          $or: [
+            { name: searchRegex },
+            { description: searchRegex },
+            { category: searchRegex },
+            { tags: { $in: [searchRegex] } },
+          ],
+        })
+        .exec();
+    } catch (error) {
+      console.error('ProductService: Error searching products:', error);
+      throw error;
+    }
+  }
+
+  async getCategories() {
+    try {
+      const categories = await this.productModel.distinct('category').exec();
+      return categories;
+    } catch (error) {
+      console.error('ProductService: Error getting categories:', error);
+      throw error;
+    }
+  }
+
+  async getFeaturedProducts() {
+    try {
+      // For now, return products with discounted prices as "featured"
+      return await this.productModel
+        .find({
+          discountedPrice: { $exists: true, $ne: null },
+          inStock: true,
+        })
+        .limit(6)
+        .exec();
+    } catch (error) {
+      console.error('ProductService: Error getting featured products:', error);
+      throw error;
+    }
   }
 }
 
 @Injectable()
 export class CartService {
-  private carts = new Map(); // In-memory storage for demo, use database in production
+  constructor(
+    @InjectModel(Cart.name) private cartModel: Model<CartDocument>,
+    @InjectModel(ProductModel.name)
+    private productModel: Model<ProductDocument>,
+  ) {}
 
   async getCart(userId: string) {
-    return this.carts.get(userId) || { items: [], discount: null, total: 0 };
+    let cart = await this.cartModel.findOne({ userId }).exec();
+
+    if (!cart) {
+      // Create new cart if it doesn't exist
+      cart = new this.cartModel({
+        userId,
+        items: [],
+        subtotal: 0,
+        discountAmount: 0,
+      });
+      await cart.save();
+    }
+
+    // Calculate subtotal
+    cart.subtotal = cart.items.reduce((sum, item) => {
+      const price = item.product.discountedPrice || item.product.price;
+      return sum + price * item.quantity;
+    }, 0);
+
+    // Save updated subtotal
+    await cart.save();
+
+    return cart;
   }
 
   async addCartItem(userId: string, itemDto: any) {
-    const cart: any = this.getCart(userId) || {
-      items: [],
-      discount: null,
-      total: 0,
-    };
-    cart.items.push({ id: Date.now().toString(), ...itemDto });
-    this.carts.set(userId, cart);
-    return cart;
+    try {
+      // Find product from database using ProductService
+      const product = await this.productModel
+        .findById(itemDto.productId)
+        .exec();
+      if (!product) {
+        throw new Error('Product not found');
+      }
+
+      if (!product.inStock) {
+        throw new Error('Product is out of stock');
+      }
+
+      let cart = await this.cartModel.findOne({ userId }).exec();
+
+      if (!cart) {
+        cart = new this.cartModel({
+          userId,
+          items: [],
+          subtotal: 0,
+          discountAmount: 0,
+        });
+      }
+
+      // Check if item already exists
+      const existingItemIndex = cart.items.findIndex(
+        (item) => item.productId === itemDto.productId,
+      );
+
+      if (existingItemIndex >= 0) {
+        // Update existing item quantity
+        cart.items[existingItemIndex].quantity += itemDto.quantity || 1;
+      } else {
+        // Add new item
+        const newItem = {
+          id: `item-${Date.now()}`,
+          productId: itemDto.productId,
+          quantity: itemDto.quantity || 1,
+          addedAt: new Date(),
+          product: {
+            id: product._id.toString(),
+            name: product.name,
+            title: product.title,
+            price: product.price,
+            discountedPrice: product.discountedPrice,
+            imageUrl: product.imageUrl,
+          },
+        };
+        cart.items.push(newItem);
+      }
+
+      // Calculate subtotal
+      cart.subtotal = cart.items.reduce((sum, item) => {
+        const price = item.product.discountedPrice || item.product.price;
+        return sum + price * item.quantity;
+      }, 0);
+
+      await cart.save();
+
+      // Return the added/updated item
+      const addedItem = cart.items.find(
+        (item) => item.productId === itemDto.productId,
+      );
+      return addedItem;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async updateCartItem(userId: string, itemId: string, updateDto: any) {
-    const cart = this.carts.get(userId);
-    if (cart) {
-      const itemIndex = cart.items.findIndex((item) => item.id === itemId);
-      if (itemIndex > -1) {
-        cart.items[itemIndex] = { ...cart.items[itemIndex], ...updateDto };
-        this.carts.set(userId, cart);
+    try {
+      const cart = await this.cartModel.findOne({ userId }).exec();
+
+      if (!cart) {
+        throw new Error('Cart not found');
       }
+
+      const itemIndex = cart.items.findIndex((item) => item.id === itemId);
+
+      if (itemIndex === -1) {
+        throw new Error('Cart item not found');
+      }
+
+      if (updateDto.quantity <= 0) {
+        // Remove item if quantity is 0 or negative
+        cart.items.splice(itemIndex, 1);
+      } else {
+        // Update item
+        cart.items[itemIndex].quantity = updateDto.quantity;
+        if (updateDto.liked !== undefined) {
+          cart.items[itemIndex].liked = updateDto.liked;
+        }
+      }
+
+      // Recalculate subtotal
+      cart.subtotal = cart.items.reduce((sum, item) => {
+        const price = item.product.discountedPrice || item.product.price;
+        return sum + price * item.quantity;
+      }, 0);
+
+      await cart.save();
+
+      return updateDto.quantity <= 0 ? null : cart.items[itemIndex];
+    } catch (error) {
+      throw error;
     }
-    return cart;
   }
 
   async removeCartItem(userId: string, itemId: string) {
-    const cart = this.carts.get(userId);
-    if (cart) {
-      cart.items = cart.items.filter((item) => item.id !== itemId);
-      this.carts.set(userId, cart);
+    try {
+      const cart = await this.cartModel.findOne({ userId }).exec();
+
+      if (!cart) {
+        throw new Error('Cart not found');
+      }
+
+      const itemIndex = cart.items.findIndex((item) => item.id === itemId);
+
+      if (itemIndex === -1) {
+        throw new Error('Cart item not found');
+      }
+
+      cart.items.splice(itemIndex, 1);
+
+      // Recalculate subtotal
+      cart.subtotal = cart.items.reduce((sum, item) => {
+        const price = item.product.discountedPrice || item.product.price;
+        return sum + price * item.quantity;
+      }, 0);
+
+      await cart.save();
+
+      return { success: true };
+    } catch (error) {
+      throw error;
     }
-    return cart;
   }
 
   async clearCart(userId: string) {
-    this.carts.set(userId, { items: [], discount: null, total: 0 });
-    return this.carts.get(userId);
+    let cart = await this.cartModel.findOne({ userId }).exec();
+
+    if (!cart) {
+      cart = new this.cartModel({
+        userId,
+        items: [],
+        subtotal: 0,
+        discountAmount: 0,
+      });
+    } else {
+      cart.items = [];
+      cart.subtotal = 0;
+      cart.discountAmount = 0;
+      cart.discountCode = undefined;
+    }
+
+    await cart.save();
+    return cart;
   }
 
   async applyDiscount(userId: string, discountCode: string) {
-    const cart = this.carts.get(userId);
-    if (cart) {
-      cart.discount = { code: discountCode, amount: 10 }; // Mock discount
-      this.carts.set(userId, cart);
+    const cart = await this.cartModel.findOne({ userId }).exec();
+
+    if (!cart) {
+      throw new Error('Cart not found');
     }
+
+    // Mock discount logic - TODO: Integrate with discount service
+    const discountAmount = cart.subtotal * 0.1; // 10% discount
+    cart.discountAmount = discountAmount;
+    cart.discountCode = discountCode;
+
+    await cart.save();
     return cart;
   }
 
   async removeDiscount(userId: string) {
-    const cart = this.carts.get(userId);
-    if (cart) {
-      cart.discount = null;
-      this.carts.set(userId, cart);
+    const cart = await this.cartModel.findOne({ userId }).exec();
+
+    if (!cart) {
+      throw new Error('Cart not found');
     }
+
+    cart.discountAmount = 0;
+    cart.discountCode = undefined;
+
+    await cart.save();
     return cart;
   }
 }

@@ -9,4 +9,5 @@ export declare class CartController {
     clearCart(token: string): import("rxjs").Observable<any>;
     applyDiscount(data: any, token: string): import("rxjs").Observable<any>;
     removeDiscount(token: string): import("rxjs").Observable<any>;
+    likeCartItem(itemId: string, data: any, token: string): import("rxjs").Observable<any>;
 }

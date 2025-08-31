@@ -16,7 +16,6 @@ export class UserController {
 
   @Get()
   async findAll() {
-    console.log('findAllUsers');
     return this.client.send({ cmd: 'findAllUsers' }, {});
   }
 

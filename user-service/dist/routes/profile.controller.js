@@ -12,28 +12,42 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfileController = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
+const jwt_1 = require("@nestjs/jwt");
 const app_service_1 = require("../app.service");
 let ProfileController = class ProfileController {
-    constructor(userService) {
+    constructor(userService, jwtService) {
         this.userService = userService;
+        this.jwtService = jwtService;
+    }
+    extractUserIdFromToken(token) {
+        try {
+            const cleanToken = token.replace(/^Bearer\s+/, '');
+            const payload = this.jwtService.verify(cleanToken);
+            return payload.sub;
+        }
+        catch (error) {
+            console.error('ProfileController: Invalid or expired token:', error.message);
+            throw new Error('Invalid or expired authentication token');
+        }
     }
     updateProfile(data) {
-        const userId = data.userId || data.id;
+        const userId = this.extractUserIdFromToken(data.token);
         return this.userService.updateProfile(userId, data);
     }
     updatePassword(data) {
-        return this.userService.updatePassword(data);
+        const userId = this.extractUserIdFromToken(data.token);
+        return this.userService.updatePassword({ ...data, userId });
     }
     deleteAccount(data) {
-        const userId = data.userId || data.id;
+        const userId = this.extractUserIdFromToken(data.token);
         return this.userService.deleteAccount(userId);
     }
     getPreferences(data) {
-        const userId = data.userId || data.id;
+        const userId = this.extractUserIdFromToken(data.token);
         return this.userService.getUserPreferences(userId);
     }
     updatePreferences(data) {
-        const userId = data.userId || data.id;
+        const userId = this.extractUserIdFromToken(data.token);
         return this.userService.updateUserPreferences(userId, data.preferences);
     }
 };
@@ -70,6 +84,7 @@ __decorate([
 ], ProfileController.prototype, "updatePreferences", null);
 exports.ProfileController = ProfileController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [app_service_1.UserService])
+    __metadata("design:paramtypes", [app_service_1.UserService,
+        jwt_1.JwtService])
 ], ProfileController);
 //# sourceMappingURL=profile.controller.js.map

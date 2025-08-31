@@ -39,6 +39,11 @@ export class OrderController {
     );
   }
 
+  @Post('checkout')
+  checkout(@Body() checkoutData: any, @Headers('authorization') token: string) {
+    return this.client.send({ cmd: 'checkout' }, { ...checkoutData, token });
+  }
+
   @Post(':id/cancel')
   cancelOrder(
     @Param('id') id: string,

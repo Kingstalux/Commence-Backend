@@ -5,9 +5,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentService = exports.EventService = exports.CartService = exports.NotificationService = exports.TransactionService = exports.OrderService = exports.CheckoutService = exports.ProductCatalogService = exports.AppService = void 0;
 const common_1 = require("@nestjs/common");
+const mongoose_1 = require("@nestjs/mongoose");
+const mongoose_2 = require("mongoose");
+const order_schema_1 = require("./models/order.schema");
 let AppService = class AppService {
     getHello() {
         return 'Hello World!';
@@ -108,45 +117,73 @@ exports.CheckoutService = CheckoutService = __decorate([
     (0, common_1.Injectable)()
 ], CheckoutService);
 let OrderService = class OrderService {
-    constructor() {
-        this.orders = [];
+    constructor(orderModel) {
+        this.orderModel = orderModel;
     }
     async findAllOrders() {
-        return this.orders;
+        return await this.orderModel.find().exec();
     }
     async getUserOrders(userId) {
-        return this.orders.filter((o) => o.userId === userId);
+        return await this.orderModel.find({ user_id: userId }).exec();
     }
     async findOrderById(id) {
-        return this.orders.find((o) => o.id === id) || null;
+        return await this.orderModel.findById(id).exec();
     }
     async createOrder(data) {
-        const order = { id: Date.now().toString(), ...data, createdAt: new Date() };
-        this.orders.push(order);
-        return order;
+        try {
+            const order = new this.orderModel({
+                user_id: new mongoose_2.Types.ObjectId(data.userId),
+                total_cents: Math.round(data.total * 100),
+                currency: data.currency || 'USD',
+                status: 'PENDING',
+            });
+            return await order.save();
+        }
+        catch (error) {
+            console.error('OrderService: Error creating order:', error);
+            throw new Error(`Failed to create order: ${error.message}`);
+        }
+    }
+    async createOrderFromCheckout(data) {
+        try {
+            console.log('OrderService: Creating order from checkout with data:', {
+                userId: data.userId,
+                total: data.total,
+                itemsCount: data.items?.length,
+                paymentMethodId: data.paymentMethodId,
+            });
+            const order = await this.createOrder(data);
+            const result = {
+                ...order.toObject(),
+                orderId: order._id.toString(),
+                status: 'success',
+                message: 'Your order has been placed successfully!',
+                estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+                trackingNumber: `TRK${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+            };
+            console.log('OrderService: Order created successfully:', result.orderId);
+            return result;
+        }
+        catch (error) {
+            console.error('OrderService: Error in createOrderFromCheckout:', error);
+            throw new Error(`Checkout failed: ${error.message}`);
+        }
     }
     async updateOrder(id, data) {
-        const index = this.orders.findIndex((o) => o.id === id);
-        if (index > -1) {
-            this.orders[index] = { ...this.orders[index], ...data };
-            return this.orders[index];
-        }
-        return null;
+        return await this.orderModel
+            .findByIdAndUpdate(id, data, { new: true })
+            .exec();
     }
     async cancelOrder(id) {
-        const order = await this.findOrderById(id);
-        if (order) {
-            order.status = 'cancelled';
-            order.cancelledAt = new Date();
-            return order;
-        }
-        return null;
+        return await this.orderModel
+            .findByIdAndUpdate(id, { status: 'FAILED' }, { new: true })
+            .exec();
     }
     async getOrderReceipt(id) {
-        const order = this.findOrderById(id);
+        const order = await this.findOrderById(id);
         if (order) {
             return {
-                ...order,
+                ...order.toObject(),
                 receiptNumber: `REC-${id}`,
                 downloadUrl: `/receipts/${id}.pdf`,
             };
@@ -154,22 +191,18 @@ let OrderService = class OrderService {
         return null;
     }
     async refundOrder(id, data) {
-        const order = await this.findOrderById(id);
-        if (order) {
-            order.status = 'refunded';
-            order.refund = {
-                amount: data.amount,
-                reason: data.reason,
-                refundedAt: new Date(),
-            };
-            return order;
-        }
-        return null;
+        return await this.orderModel
+            .findByIdAndUpdate(id, {
+            status: 'FAILED',
+        }, { new: true })
+            .exec();
     }
 };
 exports.OrderService = OrderService;
 exports.OrderService = OrderService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __param(0, (0, mongoose_1.InjectModel)(order_schema_1.Order.name)),
+    __metadata("design:paramtypes", [mongoose_2.Model])
 ], OrderService);
 let TransactionService = class TransactionService {
     constructor() {

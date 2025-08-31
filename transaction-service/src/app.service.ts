@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-// import Cart from './models/cart.schema';
-// import Event from './models/event.schema';
-// import Order from './models/order.schema';
-// import Payment from './models/payment.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { Order, OrderDocument } from './models/order.schema';
 
 @Injectable()
 export class AppService {
@@ -116,50 +115,91 @@ export class CheckoutService {
 
 @Injectable()
 export class OrderService {
-  private orders = []; // Mock storage
+  constructor(
+    @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
+  ) {}
 
   async findAllOrders() {
-    return this.orders;
+    return await this.orderModel.find().exec();
   }
 
   async getUserOrders(userId: string) {
-    return this.orders.filter((o) => o.userId === userId);
+    return await this.orderModel.find({ user_id: userId }).exec();
   }
 
   async findOrderById(id: string) {
-    return this.orders.find((o) => o.id === id) || null;
+    return await this.orderModel.findById(id).exec();
   }
 
   async createOrder(data: any) {
-    const order = { id: Date.now().toString(), ...data, createdAt: new Date() };
-    this.orders.push(order);
-    return order;
+    try {
+      const order = new this.orderModel({
+        user_id: new Types.ObjectId(data.userId),
+        total_cents: Math.round(data.total * 100), // Convert to cents
+        currency: data.currency || 'USD',
+        status: 'PENDING',
+      });
+
+      return await order.save();
+    } catch (error) {
+      console.error('OrderService: Error creating order:', error);
+      throw new Error(`Failed to create order: ${error.message}`);
+    }
+  }
+
+  async createOrderFromCheckout(data: any) {
+    try {
+      console.log('OrderService: Creating order from checkout with data:', {
+        userId: data.userId,
+        total: data.total,
+        itemsCount: data.items?.length,
+        paymentMethodId: data.paymentMethodId,
+      });
+
+      // Create the order
+      const order = await this.createOrder(data);
+
+      // Return order with additional checkout info
+      const result = {
+        ...order.toObject(),
+        orderId: order._id.toString(),
+        status: 'success',
+        message: 'Your order has been placed successfully!',
+        estimatedDelivery: new Date(
+          Date.now() + 7 * 24 * 60 * 60 * 1000,
+        ).toLocaleDateString(),
+        trackingNumber: `TRK${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+      };
+
+      console.log('OrderService: Order created successfully:', result.orderId);
+      return result;
+    } catch (error) {
+      console.error('OrderService: Error in createOrderFromCheckout:', error);
+      throw new Error(`Checkout failed: ${error.message}`);
+    }
   }
 
   async updateOrder(id: string, data: any) {
-    const index = this.orders.findIndex((o) => o.id === id);
-    if (index > -1) {
-      this.orders[index] = { ...this.orders[index], ...data };
-      return this.orders[index];
-    }
-    return null;
+    return await this.orderModel
+      .findByIdAndUpdate(id, data, { new: true })
+      .exec();
   }
 
   async cancelOrder(id: string) {
-    const order: any = await this.findOrderById(id);
-    if (order) {
-      order.status = 'cancelled';
-      order.cancelledAt = new Date();
-      return order;
-    }
-    return null;
+    return await this.orderModel
+      .findByIdAndUpdate(
+        id,
+        { status: 'FAILED' }, // Using FAILED instead of cancelled to match schema
+        { new: true },
+      )
+      .exec();
   }
 
   async getOrderReceipt(id: string) {
-    const order = this.findOrderById(id);
+    const order = await this.findOrderById(id);
     if (order) {
       return {
-        ...order,
+        ...order.toObject(),
         receiptNumber: `REC-${id}`,
         downloadUrl: `/receipts/${id}.pdf`,
       };
@@ -168,17 +208,16 @@ export class OrderService {
   }
 
   async refundOrder(id: string, data: any) {
-    const order: any = await this.findOrderById(id);
-    if (order) {
-      order.status = 'refunded';
-      order.refund = {
-        amount: data.amount,
-        reason: data.reason,
-        refundedAt: new Date(),
-      };
-      return order;
-    }
-    return null;
+    return await this.orderModel
+      .findByIdAndUpdate(
+        id,
+        {
+          status: 'FAILED', // Using FAILED for refunded status to match schema
+          // Note: You might want to add a refund field to the schema for proper tracking
+        },
+        { new: true },
+      )
+      .exec();
   }
 }
 

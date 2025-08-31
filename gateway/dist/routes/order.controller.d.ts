@@ -5,6 +5,7 @@ export declare class OrderController {
     getOrders(token: string): import("rxjs").Observable<any>;
     getOrderById(id: string, token: string): import("rxjs").Observable<any>;
     createOrder(createOrderDto: any, token: string): import("rxjs").Observable<any>;
+    checkout(checkoutData: any, token: string): import("rxjs").Observable<any>;
     cancelOrder(id: string, token: string): import("rxjs").Observable<any>;
     getOrderReceipt(id: string, token: string): import("rxjs").Observable<any>;
     refundOrder(id: string, data: any, token: string): import("rxjs").Observable<any>;

@@ -5,6 +5,12 @@ const app_module_1 = require("./app.module");
 const swagger_1 = require("@nestjs/swagger");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    app.enableCors({
+        origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+        credentials: true,
+    });
     const config = new swagger_1.DocumentBuilder()
         .setTitle('Gateway API')
         .setDescription('API Gateway for microservices')

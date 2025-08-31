@@ -12,31 +12,51 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CartController = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
+const jwt_1 = require("@nestjs/jwt");
 const app_service_1 = require("../app.service");
 let CartController = class CartController {
-    constructor(cartService) {
+    constructor(cartService, jwtService) {
         this.cartService = cartService;
+        this.jwtService = jwtService;
+    }
+    extractUserIdFromToken(token) {
+        try {
+            const cleanToken = token.replace(/^Bearer\s+/, '');
+            const payload = this.jwtService.verify(cleanToken);
+            return payload.sub;
+        }
+        catch (error) {
+            console.error('CartController: Invalid or expired token:', error.message);
+            throw new Error('Invalid or expired authentication token');
+        }
     }
     getCart(data) {
-        return this.cartService.getCart(data.userId);
+        const userId = this.extractUserIdFromToken(data.token);
+        return this.cartService.getCart(userId);
     }
     addCartItem(data) {
-        return this.cartService.addCartItem(data.userId, data);
+        const userId = this.extractUserIdFromToken(data.token);
+        return this.cartService.addCartItem(userId, data);
     }
     updateCartItem(data) {
-        return this.cartService.updateCartItem(data.userId, data.itemId, data);
+        const userId = this.extractUserIdFromToken(data.token);
+        return this.cartService.updateCartItem(userId, data.itemId, data);
     }
     removeCartItem(data) {
-        return this.cartService.removeCartItem(data.userId, data.itemId);
+        const userId = this.extractUserIdFromToken(data.token);
+        return this.cartService.removeCartItem(userId, data.itemId);
     }
     clearCart(data) {
-        return this.cartService.clearCart(data.userId);
+        const userId = this.extractUserIdFromToken(data.token);
+        return this.cartService.clearCart(userId);
     }
     applyDiscount(data) {
-        return this.cartService.applyDiscount(data.userId, data.discountCode);
+        const userId = this.extractUserIdFromToken(data.token);
+        return this.cartService.applyDiscount(userId, data.discountCode);
     }
     removeDiscount(data) {
-        return this.cartService.removeDiscount(data.userId);
+        const userId = this.extractUserIdFromToken(data.token);
+        return this.cartService.removeDiscount(userId);
     }
 };
 exports.CartController = CartController;
@@ -84,6 +104,7 @@ __decorate([
 ], CartController.prototype, "removeDiscount", null);
 exports.CartController = CartController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [app_service_1.CartService])
+    __metadata("design:paramtypes", [app_service_1.CartService,
+        jwt_1.JwtService])
 ], CartController);
 //# sourceMappingURL=cart.controller.js.map

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import {
   AppService,
@@ -35,6 +36,13 @@ import { Order, OrderSchema } from './models/order.schema';
       },
     ),
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'your-default-secret-key',
+      signOptions: {
+        expiresIn: '24h',
+        issuer: 'commence-user-service',
+      },
+    }),
   ],
   controllers: [
     AppController,
