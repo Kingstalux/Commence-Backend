@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AppController } from './app.controller';
 import {
   AppService,
@@ -9,6 +10,7 @@ import {
   FeatureFlagService,
   SystemService,
   AdminUserService,
+  AnalyticsService,
 } from './app.service';
 import { ProductController } from './routes/product.controller';
 import { InventoryController } from './routes/inventory.controller';
@@ -17,6 +19,7 @@ import { MediaController } from './routes/media.controller';
 import { FeatureFlagsController } from './routes/feature-flags.controller';
 import { SystemController } from './routes/system.controller';
 import { AdminUsersController } from './routes/admin-users.controller';
+import { AnalyticsController } from './routes/analytics.controller';
 import { Product, ProductSchema } from './models/product.schema';
 
 @Module({
@@ -29,6 +32,17 @@ import { Product, ProductSchema } from './models/product.schema';
       },
     ),
     MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
+    ClientsModule.register([
+      {
+        name: 'USER_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'],
+          queue: 'user_queue',
+          queueOptions: { durable: false },
+        },
+      },
+    ]),
   ],
   controllers: [
     AppController,
@@ -39,6 +53,7 @@ import { Product, ProductSchema } from './models/product.schema';
     FeatureFlagsController,
     SystemController,
     AdminUsersController,
+    AnalyticsController,
   ],
   providers: [
     AppService,
@@ -48,6 +63,7 @@ import { Product, ProductSchema } from './models/product.schema';
     FeatureFlagService,
     SystemService,
     AdminUserService,
+    AnalyticsService,
   ],
 })
 export class AppModule {}

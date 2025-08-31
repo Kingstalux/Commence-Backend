@@ -1,21 +1,14 @@
+import { ClientProxy } from '@nestjs/microservices';
 export declare class ProductService {
-    private products;
-    findAllProducts(): Promise<any[]>;
+    private readonly userService;
+    constructor(userService: ClientProxy);
+    findAllProducts(): Promise<any>;
     findProductById(id: string): Promise<any>;
     createProduct(dto: any): Promise<any>;
     updateProduct(id: string, dto: any): Promise<any>;
     deleteProduct(id: string): Promise<any>;
-    bulkImportProducts(products: any[]): Promise<{
-        imported: number;
-        total: number;
-    }>;
-    getInventory(sku: string): Promise<{
-        sku: string;
-        quantity: any;
-    } | {
-        sku?: undefined;
-        quantity?: undefined;
-    }>;
+    bulkImportProducts(products: any[]): Promise<any>;
+    getInventory(sku: string): Promise<any>;
     updateInventory(sku: string, dto: any): Promise<any>;
 }
 export declare class DiscountService {
@@ -90,6 +83,112 @@ export declare class AdminUserService {
         amount: number;
         status: string;
     }[]>;
+}
+export declare class AnalyticsService {
+    private readonly productService;
+    private readonly discountService;
+    private readonly userServiceClient;
+    constructor(productService: ProductService, discountService: DiscountService, userServiceClient: ClientProxy);
+    private activityLog;
+    getDashboardAnalytics(): Promise<{
+        totalProducts: {
+            current: number;
+            lastMonth: number;
+            growth: string;
+        };
+        activeDiscounts: {
+            current: number;
+            expiringSoon: number;
+        };
+        totalUsers: {
+            current: number;
+            lastMonth: number;
+            growth: string;
+        };
+        systemHealth: {
+            percentage: number;
+            status: string;
+            message: string;
+        };
+    }>;
+    getRecentActivity(limit?: number): Promise<({
+        timeAgo: string;
+        id: string;
+        type: string;
+        message: string;
+        timestamp: Date;
+        user: string;
+        metadata: {
+            productId: string;
+            productName: string;
+            discountCode?: undefined;
+            discountValue?: undefined;
+            userId?: undefined;
+            email?: undefined;
+            orderId?: undefined;
+            amount?: undefined;
+        };
+    } | {
+        timeAgo: string;
+        id: string;
+        type: string;
+        message: string;
+        timestamp: Date;
+        user: string;
+        metadata: {
+            discountCode: string;
+            discountValue: number;
+            productId?: undefined;
+            productName?: undefined;
+            userId?: undefined;
+            email?: undefined;
+            orderId?: undefined;
+            amount?: undefined;
+        };
+    } | {
+        timeAgo: string;
+        id: string;
+        type: string;
+        message: string;
+        timestamp: Date;
+        user: string;
+        metadata: {
+            userId: string;
+            email: string;
+            productId?: undefined;
+            productName?: undefined;
+            discountCode?: undefined;
+            discountValue?: undefined;
+            orderId?: undefined;
+            amount?: undefined;
+        };
+    } | {
+        timeAgo: string;
+        id: string;
+        type: string;
+        message: string;
+        timestamp: Date;
+        user: string;
+        metadata: {
+            orderId: string;
+            amount: number;
+            productId?: undefined;
+            productName?: undefined;
+            discountCode?: undefined;
+            discountValue?: undefined;
+            userId?: undefined;
+            email?: undefined;
+        };
+    })[]>;
+    logActivity(type: string, message: string, user: string, metadata?: any): Promise<{
+        id: string;
+        type: string;
+        message: string;
+        timestamp: Date;
+        user: string;
+        metadata: any;
+    }>;
+    private getTimeAgo;
 }
 export declare class AppService {
     getHello(): string;

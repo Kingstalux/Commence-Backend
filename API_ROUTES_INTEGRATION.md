@@ -69,6 +69,12 @@
 - `DELETE /api/admin/users/:id` → `ADMIN_SERVICE` → `admin_delete_user`
 - `GET /api/admin/users/:id/orders` → `ADMIN_SERVICE` → `admin_get_user_orders`
 
+**Analytics & Activity Logging**
+
+- `GET /api/admin/analytics/dashboard` → `ADMIN_SERVICE` → `admin_get_analytics`
+- `GET /api/admin/analytics/activity` → `ADMIN_SERVICE` → `admin_get_recent_activity`
+- `POST /api/admin/analytics/activity` → `ADMIN_SERVICE` → `admin_log_activity`
+
 ### **Transaction Service Routes** ✅
 
 **Public Product Catalog**

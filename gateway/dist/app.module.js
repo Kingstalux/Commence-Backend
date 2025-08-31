@@ -29,6 +29,7 @@ const system_controller_1 = require("./routes/system.controller");
 const admin_users_controller_1 = require("./routes/admin-users.controller");
 const transactions_controller_1 = require("./routes/transactions.controller");
 const notifications_controller_1 = require("./routes/notifications.controller");
+const analytics_controller_1 = require("./routes/analytics.controller");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -87,6 +88,7 @@ exports.AppModule = AppModule = __decorate([
             transactions_controller_1.TransactionsController,
             transactions_controller_1.AdminTransactionsController,
             notifications_controller_1.NotificationsController,
+            analytics_controller_1.AnalyticsController,
         ],
         providers: [app_service_1.AppService],
     })

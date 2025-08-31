@@ -521,6 +521,114 @@ export class ProductService {
       throw error;
     }
   }
+
+  // Admin product management methods
+  async createProduct(createProductDto: any) {
+    try {
+      console.log('ProductService: Creating product:', createProductDto);
+      const product = new this.productModel(createProductDto);
+      const savedProduct = await product.save();
+      console.log(
+        'ProductService: Product created successfully:',
+        savedProduct._id,
+      );
+      return savedProduct;
+    } catch (error) {
+      console.error('ProductService: Error creating product:', error);
+      throw error;
+    }
+  }
+
+  async updateProduct(id: string, updateProductDto: any) {
+    try {
+      console.log('ProductService: Updating product:', id, updateProductDto);
+      const updatedProduct = await this.productModel
+        .findByIdAndUpdate(id, updateProductDto, { new: true })
+        .exec();
+      if (!updatedProduct) {
+        throw new Error('Product not found');
+      }
+      console.log(
+        'ProductService: Product updated successfully:',
+        updatedProduct._id,
+      );
+      return updatedProduct;
+    } catch (error) {
+      console.error('ProductService: Error updating product:', error);
+      throw error;
+    }
+  }
+
+  async deleteProduct(id: string) {
+    try {
+      console.log('ProductService: Deleting product:', id);
+      const deletedProduct = await this.productModel
+        .findByIdAndDelete(id)
+        .exec();
+      if (!deletedProduct) {
+        throw new Error('Product not found');
+      }
+      console.log(
+        'ProductService: Product deleted successfully:',
+        deletedProduct._id,
+      );
+      return { success: true, deletedProduct };
+    } catch (error) {
+      console.error('ProductService: Error deleting product:', error);
+      throw error;
+    }
+  }
+
+  async bulkImportProducts(products: any[]) {
+    try {
+      console.log('ProductService: Bulk importing products:', products.length);
+      const importedProducts = await this.productModel.insertMany(products);
+      console.log(
+        'ProductService: Bulk import successful:',
+        importedProducts.length,
+      );
+      return {
+        imported: importedProducts.length,
+        total: await this.productModel.countDocuments(),
+        products: importedProducts,
+      };
+    } catch (error) {
+      console.error('ProductService: Error bulk importing products:', error);
+      throw error;
+    }
+  }
+
+  // Inventory management methods
+  async getInventory(sku: string) {
+    try {
+      const product = await this.productModel.findOne({ sku }).exec();
+      return product
+        ? { sku, quantity: product.stockCount || 0 }
+        : { sku, quantity: 0 };
+    } catch (error) {
+      console.error('ProductService: Error getting inventory:', error);
+      throw error;
+    }
+  }
+
+  async updateInventory(sku: string, updateDto: any) {
+    try {
+      const updatedProduct = await this.productModel
+        .findOneAndUpdate(
+          { sku },
+          { stockCount: updateDto.quantity },
+          { new: true },
+        )
+        .exec();
+      if (!updatedProduct) {
+        throw new Error('Product with SKU not found');
+      }
+      return { sku, quantity: updatedProduct.stockCount };
+    } catch (error) {
+      console.error('ProductService: Error updating inventory:', error);
+      throw error;
+    }
+  }
 }
 
 @Injectable()

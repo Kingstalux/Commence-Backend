@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
+const microservices_1 = require("@nestjs/microservices");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const product_controller_1 = require("./routes/product.controller");
@@ -18,6 +19,7 @@ const media_controller_1 = require("./routes/media.controller");
 const feature_flags_controller_1 = require("./routes/feature-flags.controller");
 const system_controller_1 = require("./routes/system.controller");
 const admin_users_controller_1 = require("./routes/admin-users.controller");
+const analytics_controller_1 = require("./routes/analytics.controller");
 const product_schema_1 = require("./models/product.schema");
 let AppModule = class AppModule {
 };
@@ -30,6 +32,17 @@ exports.AppModule = AppModule = __decorate([
                 socketTimeoutMS: 45000,
             }),
             mongoose_1.MongooseModule.forFeature([{ name: product_schema_1.Product.name, schema: product_schema_1.ProductSchema }]),
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'USER_SERVICE',
+                    transport: microservices_1.Transport.RMQ,
+                    options: {
+                        urls: ['amqp://localhost:5672'],
+                        queue: 'user_queue',
+                        queueOptions: { durable: false },
+                    },
+                },
+            ]),
         ],
         controllers: [
             app_controller_1.AppController,
@@ -40,6 +53,7 @@ exports.AppModule = AppModule = __decorate([
             feature_flags_controller_1.FeatureFlagsController,
             system_controller_1.SystemController,
             admin_users_controller_1.AdminUsersController,
+            analytics_controller_1.AnalyticsController,
         ],
         providers: [
             app_service_1.AppService,
@@ -49,6 +63,7 @@ exports.AppModule = AppModule = __decorate([
             app_service_1.FeatureFlagService,
             app_service_1.SystemService,
             app_service_1.AdminUserService,
+            app_service_1.AnalyticsService,
         ],
     })
 ], AppModule);

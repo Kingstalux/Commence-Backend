@@ -32,6 +32,24 @@ let ProductsController = class ProductsController {
     getProductById(data) {
         return this.productService.getProductById(data.id);
     }
+    createProduct(createProductDto) {
+        return this.productService.createProduct(createProductDto);
+    }
+    updateProduct(data) {
+        return this.productService.updateProduct(data.id, data);
+    }
+    deleteProduct(data) {
+        return this.productService.deleteProduct(data.id);
+    }
+    bulkImportProducts(data) {
+        return this.productService.bulkImportProducts(data.products);
+    }
+    getInventory(data) {
+        return this.productService.getInventory(data.sku);
+    }
+    updateInventory(data) {
+        return this.productService.updateInventory(data.sku, data);
+    }
 };
 exports.ProductsController = ProductsController;
 __decorate([
@@ -64,6 +82,42 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "getProductById", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_create_product' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "createProduct", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_update_product' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "updateProduct", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_delete_product' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "deleteProduct", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'admin_bulk_import_products' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "bulkImportProducts", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'get_inventory' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "getInventory", null);
+__decorate([
+    (0, microservices_1.MessagePattern)({ cmd: 'update_inventory' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProductsController.prototype, "updateInventory", null);
 exports.ProductsController = ProductsController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.ProductService])

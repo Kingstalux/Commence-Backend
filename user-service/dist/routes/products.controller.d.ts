@@ -23,4 +23,39 @@ export declare class ProductsController {
     }> & {
         __v: number;
     }>;
+    createProduct(createProductDto: any): Promise<import("mongoose").Document<unknown, {}, import("../models/product.schema").ProductDocument, {}, {}> & import("../models/product.schema").ProductModel & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    updateProduct(data: any): Promise<import("mongoose").Document<unknown, {}, import("../models/product.schema").ProductDocument, {}, {}> & import("../models/product.schema").ProductModel & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    deleteProduct(data: any): Promise<{
+        success: boolean;
+        deletedProduct: import("mongoose").Document<unknown, {}, import("../models/product.schema").ProductDocument, {}, {}> & import("../models/product.schema").ProductModel & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+            _id: unknown;
+        }> & {
+            __v: number;
+        };
+    }>;
+    bulkImportProducts(data: any): Promise<{
+        imported: number;
+        total: number;
+        products: import("mongoose").MergeType<import("mongoose").Document<unknown, {}, import("../models/product.schema").ProductDocument, {}, {}> & import("../models/product.schema").ProductModel & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+            _id: unknown;
+        }> & {
+            __v: number;
+        }, Omit<any, "_id">>[];
+    }>;
+    getInventory(data: any): Promise<{
+        sku: string;
+        quantity: number;
+    }>;
+    updateInventory(data: any): Promise<{
+        sku: string;
+        quantity: number;
+    }>;
 }

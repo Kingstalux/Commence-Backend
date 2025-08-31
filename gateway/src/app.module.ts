@@ -26,6 +26,7 @@ import {
   AdminTransactionsController,
 } from './routes/transactions.controller';
 import { NotificationsController } from './routes/notifications.controller';
+import { AnalyticsController } from './routes/analytics.controller';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { NotificationsController } from './routes/notifications.controller';
     TransactionsController,
     AdminTransactionsController,
     NotificationsController,
+    AnalyticsController,
   ],
   providers: [AppService],
 })

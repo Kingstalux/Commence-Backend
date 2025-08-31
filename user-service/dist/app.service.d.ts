@@ -171,6 +171,41 @@ export declare class ProductService {
     }> & {
         __v: number;
     })[]>;
+    createProduct(createProductDto: any): Promise<import("mongoose").Document<unknown, {}, ProductDocument, {}, {}> & ProductModel & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    updateProduct(id: string, updateProductDto: any): Promise<import("mongoose").Document<unknown, {}, ProductDocument, {}, {}> & ProductModel & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
+    deleteProduct(id: string): Promise<{
+        success: boolean;
+        deletedProduct: import("mongoose").Document<unknown, {}, ProductDocument, {}, {}> & ProductModel & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+            _id: unknown;
+        }> & {
+            __v: number;
+        };
+    }>;
+    bulkImportProducts(products: any[]): Promise<{
+        imported: number;
+        total: number;
+        products: import("mongoose").MergeType<import("mongoose").Document<unknown, {}, ProductDocument, {}, {}> & ProductModel & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
+            _id: unknown;
+        }> & {
+            __v: number;
+        }, Omit<any, "_id">>[];
+    }>;
+    getInventory(sku: string): Promise<{
+        sku: string;
+        quantity: number;
+    }>;
+    updateInventory(sku: string, updateDto: any): Promise<{
+        sku: string;
+        quantity: number;
+    }>;
 }
 export declare class CartService {
     private cartModel;
