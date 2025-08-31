@@ -4,13 +4,17 @@ import { User, UserDocument } from './models/user.schema';
 import { Cart, CartDocument } from './models/cart.schema';
 import { ProductModel, ProductDocument } from './models/product.schema';
 import { PaymentMethod, PaymentMethodDocument } from './models/payment-method.schema';
+import { RoleDocument } from './models/role.schema';
+import { UserRoleDocument } from './models/userRole.schema';
 export declare class AppService {
     getHello(): string;
 }
 export declare class UserService {
     private userModel;
+    private roleModel;
+    private userRoleModel;
     private jwtService;
-    constructor(userModel: Model<UserDocument>, jwtService: JwtService);
+    constructor(userModel: Model<UserDocument>, roleModel: Model<RoleDocument>, userRoleModel: Model<UserRoleDocument>, jwtService: JwtService);
     findAllUsers(): Promise<(import("mongoose").Document<unknown, {}, UserDocument, {}, {}> & User & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{
         _id: unknown;
     }> & {
@@ -71,6 +75,7 @@ export declare class UserService {
         id: unknown;
         email: string;
         name: string;
+        role: string;
         preferences: any;
     }>;
     getProfile(id: string): Promise<import("mongoose").Document<unknown, {}, UserDocument, {}, {}> & User & import("mongoose").Document<unknown, any, any, Record<string, any>, {}> & Required<{

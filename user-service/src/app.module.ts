@@ -23,6 +23,8 @@ import {
   PaymentMethod,
   PaymentMethodSchema,
 } from './models/payment-method.schema';
+import { Role, RoleSchema } from './models/role.schema';
+import { UserRole, UserRoleSchema } from './models/userRole.schema';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import {
       { name: Cart.name, schema: CartSchema },
       { name: ProductModel.name, schema: ProductSchema },
       { name: PaymentMethod.name, schema: PaymentMethodSchema },
+      { name: Role.name, schema: RoleSchema },
+      { name: UserRole.name, schema: UserRoleSchema },
     ]),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'your-default-secret-key',

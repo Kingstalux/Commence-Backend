@@ -27,6 +27,7 @@ export declare class AuthController {
         id: unknown;
         email: string;
         name: string;
+        role: string;
         preferences: any;
     }>;
 }

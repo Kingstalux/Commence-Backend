@@ -23,6 +23,8 @@ const user_schema_1 = require("./models/user.schema");
 const cart_schema_1 = require("./models/cart.schema");
 const product_schema_1 = require("./models/product.schema");
 const payment_method_schema_1 = require("./models/payment-method.schema");
+const role_schema_1 = require("./models/role.schema");
+const userRole_schema_1 = require("./models/userRole.schema");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -38,6 +40,8 @@ exports.AppModule = AppModule = __decorate([
                 { name: cart_schema_1.Cart.name, schema: cart_schema_1.CartSchema },
                 { name: product_schema_1.ProductModel.name, schema: product_schema_1.ProductSchema },
                 { name: payment_method_schema_1.PaymentMethod.name, schema: payment_method_schema_1.PaymentMethodSchema },
+                { name: role_schema_1.Role.name, schema: role_schema_1.RoleSchema },
+                { name: userRole_schema_1.UserRole.name, schema: userRole_schema_1.UserRoleSchema },
             ]),
             jwt_1.JwtModule.register({
                 secret: process.env.JWT_SECRET || 'your-default-secret-key',

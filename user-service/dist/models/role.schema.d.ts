@@ -1,10 +1,17 @@
 import { Document } from 'mongoose';
+export type RoleDocument = Role & Document;
+export declare class Role {
+    name: string;
+}
+export declare const RoleSchema: import("mongoose").Schema<Role, import("mongoose").Model<Role, any, any, any, Document<unknown, any, Role, any, {}> & Role & {
+    _id: import("mongoose").Types.ObjectId;
+} & {
+    __v: number;
+}, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, Role, Document<unknown, {}, import("mongoose").FlatRecord<Role>, {}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & import("mongoose").FlatRecord<Role> & {
+    _id: import("mongoose").Types.ObjectId;
+} & {
+    __v: number;
+}>;
 export interface IRole extends Document {
     name: string;
 }
-declare const _default: import("mongoose").Model<IRole, {}, {}, {}, Document<unknown, {}, IRole, {}, {}> & IRole & Required<{
-    _id: unknown;
-}> & {
-    __v: number;
-}, any>;
-export default _default;

@@ -21,6 +21,8 @@ const user_schema_1 = require("./models/user.schema");
 const cart_schema_1 = require("./models/cart.schema");
 const product_schema_1 = require("./models/product.schema");
 const payment_method_schema_1 = require("./models/payment-method.schema");
+const role_schema_1 = require("./models/role.schema");
+const userRole_schema_1 = require("./models/userRole.schema");
 let AppService = class AppService {
     getHello() {
         return 'Hello World!';
@@ -31,8 +33,10 @@ exports.AppService = AppService = __decorate([
     (0, common_1.Injectable)()
 ], AppService);
 let UserService = class UserService {
-    constructor(userModel, jwtService) {
+    constructor(userModel, roleModel, userRoleModel, jwtService) {
         this.userModel = userModel;
+        this.roleModel = roleModel;
+        this.userRoleModel = userRoleModel;
         this.jwtService = jwtService;
     }
     async findAllUsers() {
@@ -165,10 +169,29 @@ let UserService = class UserService {
             if (!user) {
                 throw new Error('User not found');
             }
+            let userRole = 'USER';
+            try {
+                const userRoleRecord = await this.userRoleModel
+                    .findOne({ user_id: user._id })
+                    .exec();
+                if (userRoleRecord) {
+                    const roleRecord = await this.roleModel
+                        .findById(userRoleRecord.role_id)
+                        .exec();
+                    if (roleRecord && roleRecord.name === 'admin') {
+                        userRole = 'ADMIN';
+                    }
+                }
+            }
+            catch (roleError) {
+                console.warn('UserService: Could not determine user role, defaulting to USER:', roleError);
+            }
+            console.log(`UserService: User ${user.email} has role: ${userRole}`);
             return {
                 id: user._id,
                 email: user.email,
                 name: user.name,
+                role: userRole,
                 preferences: user.preferences,
             };
         }
@@ -248,7 +271,11 @@ exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(user_schema_1.User.name)),
+    __param(1, (0, mongoose_1.InjectModel)(role_schema_1.Role.name)),
+    __param(2, (0, mongoose_1.InjectModel)(userRole_schema_1.UserRole.name)),
     __metadata("design:paramtypes", [mongoose_2.Model,
+        mongoose_2.Model,
+        mongoose_2.Model,
         jwt_1.JwtService])
 ], UserService);
 let PaymentMethodService = class PaymentMethodService {

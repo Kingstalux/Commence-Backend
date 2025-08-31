@@ -9,6 +9,8 @@ import {
   PaymentMethod,
   PaymentMethodDocument,
 } from './models/payment-method.schema';
+import { Role, RoleDocument } from './models/role.schema';
+import { UserRole, UserRoleDocument } from './models/userRole.schema';
 
 @Injectable()
 export class AppService {
@@ -21,6 +23,8 @@ export class AppService {
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Role.name) private roleModel: Model<RoleDocument>,
+    @InjectModel(UserRole.name) private userRoleModel: Model<UserRoleDocument>,
     private jwtService: JwtService,
   ) {}
 
@@ -169,10 +173,34 @@ export class UserService {
         throw new Error('User not found');
       }
 
+      // Get user's role from the database
+      let userRole = 'USER'; // Default role
+      try {
+        const userRoleRecord = await this.userRoleModel
+          .findOne({ user_id: user._id })
+          .exec();
+        if (userRoleRecord) {
+          const roleRecord = await this.roleModel
+            .findById(userRoleRecord.role_id)
+            .exec();
+          if (roleRecord && roleRecord.name === 'admin') {
+            userRole = 'ADMIN';
+          }
+        }
+      } catch (roleError) {
+        console.warn(
+          'UserService: Could not determine user role, defaulting to USER:',
+          roleError,
+        );
+      }
+
+      console.log(`UserService: User ${user.email} has role: ${userRole}`);
+
       return {
         id: user._id,
         email: user.email,
         name: user.name,
+        role: userRole,
         preferences: user.preferences,
       };
     } catch (error) {
