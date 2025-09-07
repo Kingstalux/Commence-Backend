@@ -7,7 +7,10 @@ async function bootstrap() {
 
   // Enable CORS for frontend communication
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: [
+    "http://localhost:3000",
+    "http://10.0.2.15:3000",
+  ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     credentials: true,
@@ -21,7 +24,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT ?? 3100);
+  await app.listen(3100, '0.0.0.0');
 }
 bootstrap();
 // .then.catch(console.error);

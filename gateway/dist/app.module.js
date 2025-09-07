@@ -41,7 +41,7 @@ exports.AppModule = AppModule = __decorate([
                     name: 'USER_SERVICE',
                     transport: microservices_1.Transport.RMQ,
                     options: {
-                        urls: ['amqp://localhost:5672'],
+                        urls: ['amqp://10.0.2.15:5672'],
                         queue: 'user_queue',
                         queueOptions: { durable: false },
                     },
@@ -50,7 +50,7 @@ exports.AppModule = AppModule = __decorate([
                     name: 'ADMIN_SERVICE',
                     transport: microservices_1.Transport.RMQ,
                     options: {
-                        urls: ['amqp://localhost:5672'],
+                        urls: ['amqp://10.0.2.15:5672'],
                         queue: 'admin_queue',
                         queueOptions: { durable: false },
                     },
@@ -59,7 +59,7 @@ exports.AppModule = AppModule = __decorate([
                     name: 'TRANSACTION_SERVICE',
                     transport: microservices_1.Transport.RMQ,
                     options: {
-                        urls: ['amqp://localhost:5672'],
+                        urls: ['amqp://10.0.2.15:5672'],
                         queue: 'transaction_queue',
                         queueOptions: { durable: false },
                     },

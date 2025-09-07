@@ -23,6 +23,7 @@ let AuthController = class AuthController {
         return this.client.send({ cmd: 'auth_signup' }, signupDto);
     }
     login(loginDto) {
+        console.log("login", loginDto);
         return this.client.send({ cmd: 'auth_login' }, loginDto);
     }
     logout(data) {

@@ -31,8 +31,8 @@ exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            mongoose_1.MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/userservice', {
-                serverSelectionTimeoutMS: 5000,
+            mongoose_1.MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://10.0.2.15:27017/userservice', {
+                serverSelectionTimeoutMS: 10000,
                 socketTimeoutMS: 45000,
             }),
             mongoose_1.MongooseModule.forFeature([

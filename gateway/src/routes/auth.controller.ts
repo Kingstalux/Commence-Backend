@@ -12,6 +12,7 @@ export class AuthController {
 
   @Post('login')
   login(@Body() loginDto: any) {
+    console.log("login", loginDto);
     return this.client.send({ cmd: 'auth_login' }, loginDto);
   }
 

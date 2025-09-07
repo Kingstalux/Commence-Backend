@@ -35,7 +35,7 @@ import { AnalyticsController } from './routes/analytics.controller';
         name: 'USER_SERVICE',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: ['amqp://10.0.2.15:5672'],
           queue: 'user_queue',
           queueOptions: { durable: false },
         },
@@ -44,7 +44,7 @@ import { AnalyticsController } from './routes/analytics.controller';
         name: 'ADMIN_SERVICE',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: ['amqp://10.0.2.15:5672'],
           queue: 'admin_queue',
           queueOptions: { durable: false },
         },
@@ -53,7 +53,7 @@ import { AnalyticsController } from './routes/analytics.controller';
         name: 'TRANSACTION_SERVICE',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: ['amqp://10.0.2.15:5672'],
           queue: 'transaction_queue',
           queueOptions: { durable: false },
         },

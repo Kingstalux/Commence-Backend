@@ -1,35 +1,26 @@
 version: "3.8"
 
 services:
-  rabbitmq:
-    image: rabbitmq:3.13-management
-    container_name: commence-rabbitmq
-    hostname: rabbitmq
-    ports:
-      - "5672:5672" # AMQP protocol port
-      - "15672:15672" # Management UI port
-    environment:
-      - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
-      - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq.conf
+  mongodb:
+    image: mongo:4.4
+    container_name: commence-mongodb
+    hostname: mongodb
+    network_mode: host
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-      - rabbitmq_logs:/var/log/rabbitmq
-      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-    networks:
-      - commence-network
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    command: ["mongod", "--bind_ip_all", "--port", "27017"]
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 40s
 
 volumes:
-  rabbitmq_data:
+  mongodb_data:
     driver: local
-  rabbitmq_logs:
+  mongodb_config:
     driver: local
-
-networks:
-  commence-network:
-    driver: bridge

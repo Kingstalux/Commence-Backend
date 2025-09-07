@@ -29,9 +29,9 @@ import { UserRole, UserRoleSchema } from './models/userRole.schema';
 @Module({
   imports: [
     MongooseModule.forRoot(
-      process.env.MONGODB_URI || 'mongodb://localhost:27017/userservice',
+      process.env.MONGODB_URI || 'mongodb://10.0.2.15:27017/userservice',
       {
-        serverSelectionTimeoutMS: 5000,
+        serverSelectionTimeoutMS: 10000,
         socketTimeoutMS: 45000,
       },
     ),
